@@ -1,0 +1,5 @@
+import type { Metadata } from "next";
+import { EnquiryForm } from "@/components/EnquiryForm";
+import { PageHero } from "@/components/PageHero";
+export const metadata:Metadata={title:"Contact & Project Enquiries",description:"Discuss your architectural, engineering, construction or property development project with PLOT in Hargeisa."};
+export default function Contact(){return <><PageHero eyebrow="Project enquiries" title="Let's talk about your next project." description="Describe the project you have in mind. We'll use your details to understand the scope and discuss a practical next step."/><section className="contact section"><div className="shell contactgrid"><div><div className="eyebrow">Tell us your vision</div><h2>Start with the brief.</h2><p className="contactintro">Homes, commercial projects, engineering design, cost estimates and development concepts. We want to understand what you need.</p><div className="contact-context"><b>Hargeisa, Somaliland</b>Start with your location, priorities and the type of support you need.</div></div><EnquiryForm/></div></section></>}
