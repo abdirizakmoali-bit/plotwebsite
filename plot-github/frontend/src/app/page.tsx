@@ -1,3 +1,4 @@
+import { HomeFeature } from "@/components/HomeFeature";
 import Link from "next/link";
 import { getPosts } from "@/lib/insights";
 
@@ -10,9 +11,7 @@ const features = [
 export default function Home() {
   const stories = getPosts().slice(0, 3);
   return <>
-    <section className="cover"><img src="/studio/villa.webp" alt="A modern villa with a sheltered balcony and palm trees" fetchPriority="high"/>
-      <div className="cover-copy"><p>Real estate & development · Hargeisa</p><h1>A home on<br/>your land.</h1>
-        <Link href="/contact">Plan your project <span>↗</span></Link></div></section>
+    <HomeFeature/>
     <section className="shell disciplines"><h2>From land to keys.</h2><div className="tiles">{features.map(f => <Link key={f.title} href={f.link}>
       <img src={'/studio/' + f.image + '.webp'} alt={f.alt} loading="lazy"/><h3>{f.title} ↗</h3><p>{f.text}</p></Link>)}</div></section>
     <section className="home-portfolio"><div className="shell">

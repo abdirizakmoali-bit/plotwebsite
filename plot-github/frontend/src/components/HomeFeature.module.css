@@ -1,0 +1,30 @@
+.hero {
+  position:relative; isolation:isolate; overflow:hidden; background:#323a30; color:#fff;
+  min-height:clamp(620px,91svh,1020px); display:grid;
+}
+.photo { position:absolute; inset:0; z-index:-2; width:100%; height:100%; object-fit:cover; object-position:55% 54%; animation:reveal .4s ease-out; }
+.hero:before { content:""; position:absolute; inset:0; z-index:-1;
+  background:linear-gradient(180deg,rgba(10,15,11,.75),transparent 26%,transparent 64%,rgba(10,15,11,.8)),linear-gradient(90deg,#0c130ee8,#0c130e91 38%,#0c130e12 78%);
+}
+.inner { width:min(100% - clamp(40px,9vw,150px),1540px); margin:0 auto; display:flex; flex-direction:column; justify-content:flex-end; padding-top:120px; }
+.copy { max-width:650px; padding-bottom:clamp(32px,6vh,76px); }
+.location { margin:0 0 14px; text-transform:uppercase; font:500 12px/1.5 Inter,Arial,sans-serif; letter-spacing:.17em; }
+.copy h1 { max-width:12ch; margin:0; font:400 clamp(60px,6.8vw,112px)/.98 Georgia,serif; letter-spacing:-.055em; text-wrap:balance; }
+.description { font:400 clamp(16px,1.25vw,20px)/1.5 Inter,Arial,sans-serif; max-width:43ch; margin:20px 0 25px; }
+.action { display:inline-flex; align-items:center; gap:28px; min-height:46px; padding:10px 20px; background:#fbfaf5; color:#202521; border-radius:2px; }
+.action:hover { background:#eee5cf; }
+.choices { display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(12px,2.5vw,44px); padding-bottom:14px; }
+.choices button { line-height:1.3; text-align:left; background:none; border:0; border-top:1px solid #ffffff82; color:white; min-height:56px; padding:12px 0; position:relative; }
+.choices button[aria-pressed="true"]:before { content:""; position:absolute; top:-2px; left:0; right:0; height:3px; background:#ecd096; }
+.choices button:hover { border-color:white; }
+@keyframes reveal { from { opacity:.78; } to { opacity:1; } }
+@media(max-width:760px) {
+  .hero { min-height:clamp(590px,91svh,850px); }
+  .hero:before { background:linear-gradient(180deg,#0c120eb8,transparent 28%,#0c120ebd 65%,#0c120ef5); }
+  .photo { object-position:55% center; }
+  .copy { max-width:500px; padding-bottom:26px; }
+  .copy h1 { font-size:clamp(48px,11vw,74px); }
+  .description { margin:13px 0 18px; }
+  .choices button { font-size:14px; }
+}
+@media(prefers-reduced-motion:reduce) { .photo { animation:none; } }

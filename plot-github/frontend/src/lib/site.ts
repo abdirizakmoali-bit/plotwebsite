@@ -1,12 +1,4 @@
 export const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://example.com";
-export const navLinks = [
-  { label: "Services", href: "/services" },
-  { label: "Projects", href: "/projects" },
-  { label: "Our Process", href: "/process" },
-  { label: "About", href: "/about" },
-  { label: "Insights", href: "/insights" },
-  { label: "Contact", href: "/contact" },
-];
 export const services = [
   {
     name: "Architectural Design", description: "Turn your brief into carefully planned layouts, elevations and spaces suited to the way you live or work.",

@@ -53,3 +53,5 @@ body{background:white;color:#20211e;font-family:Inter,Arial,sans-serif}
   .home-portfolio img {max-height:300px;object-fit:cover}
   .portfolio-index {font-size:14px}
 }
+
+html { scroll-padding-top: 90px; }
