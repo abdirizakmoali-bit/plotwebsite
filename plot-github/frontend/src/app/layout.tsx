@@ -1,6 +1,7 @@
 import { ConversionTools } from "@/components/LeadExperience";
 import type { Metadata } from "next";
 import "./globals.css";
+import "./studio.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { siteUrl } from "@/lib/site";

@@ -4,6 +4,7 @@ export const navLinks = [
   { label: "Projects", href: "/projects" },
   { label: "Our Process", href: "/process" },
   { label: "About", href: "/about" },
+  { label: "Insights", href: "/insights" },
   { label: "Contact", href: "/contact" },
 ];
 export const services = [
