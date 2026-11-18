@@ -8,13 +8,21 @@ const features = [
 ];
 
 export default function Home() {
-  const latest = getPosts()[0];
+  const stories = getPosts().slice(0, 3);
   return <>
     <section className="cover"><img src="/studio/villa.webp" alt="A modern villa with a sheltered balcony and palm trees" fetchPriority="high"/>
       <div className="cover-copy"><p>Real estate & development · Hargeisa</p><h1>A home on<br/>your land.</h1>
         <Link href="/contact">Plan your project <span>↗</span></Link></div></section>
     <section className="shell disciplines"><h2>From land to keys.</h2><div className="tiles">{features.map(f => <Link key={f.title} href={f.link}>
       <img src={'/studio/' + f.image + '.webp'} alt={f.alt} loading="lazy"/><h3>{f.title} ↗</h3><p>{f.text}</p></Link>)}</div></section>
-    {latest && <section className="home-journal shell"><Link href="/insights">Insights ↗</Link><div><h2><Link href={'/insights/' + latest.slug}>{latest.title}</Link></h2><p>{latest.summary}</p></div></section>}
+    <section className="home-portfolio"><div className="shell">
+      <img src="/home.webp" alt="Residential design study with a sheltered entrance and courtyard" loading="lazy"/>
+      <div><h2 className="feature-heading">Explore the portfolio.</h2>
+        <p>See how a home comes together, from the approach to the front door to the rooms where your family spends the day.</p>
+        <nav aria-label="Browse the portfolio"><Link className="text-action" href="/projects#studies">Design studies ↗</Link><Link className="text-action" href="/projects#ongoing">Ongoing projects ↗</Link><Link className="text-action" href="/projects#finished">Finished projects ↗</Link></nav>
+      </div></div></section>
+    <section className="shell journal-preview"><header><h2 className="feature-heading">Insights</h2><Link className="text-action" href="/insights">Browse all articles ↗</Link></header>
+      <div className="story-grid">{stories.map(story => <article key={story.slug}><h3><Link href={'/insights/' + story.slug}>{story.title}</Link></h3><p>{story.summary}</p></article>)}</div>
+    </section>
   </>;
 }

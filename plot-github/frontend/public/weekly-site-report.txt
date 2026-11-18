@@ -1,0 +1,32 @@
+PLOT | Weekly site report
+Project:
+Location:
+Week ending:
+Prepared by:
+Drawing revision:
+Next review date:
+
+1. Work this week
+Planned activity:
+Work installed (location, quantity and unit):
+Work checked (by whom, date and outcome):
+Items awaiting inspection:
+
+2. Materials
+Item, quantity, delivery date and storage location:
+Outstanding delivery and effect on next week's work:
+
+3. Photographs
+Photo reference, date, viewpoint and what it shows:
+
+4. Decisions and changes
+Question:
+Options and quoted cost or timing effect:
+Person responsible:
+Decision needed by:
+Decision taken and date:
+
+5. Next week
+Planned work:
+Dependencies:
+Outstanding items carried forward:

@@ -16,5 +16,6 @@ export default async function Article(props: Props) {
   const post = await getPost(props);
   return <article className="reading"><Link href="/insights">← All insights</Link><time dateTime={post.date}>{post.date}</time>
     <h1>{post.title}</h1><p className="intro">{post.summary}</p>{post.body.map((block,i) => block.startsWith("## ") ? <h2 key={i}>{block.slice(3)}</h2> : <p key={i}>{block}</p>)}
+    {post.slug.endsWith("-reading-a-site-update-from-abroad") && <p><a className="text-action" href="/weekly-site-report.txt" download>Download the weekly site report template ↓</a></p>}
     <Link href="/contact">Discuss your project ↗</Link></article>;
 }
