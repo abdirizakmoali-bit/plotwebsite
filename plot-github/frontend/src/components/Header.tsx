@@ -16,6 +16,8 @@ export function Header() {
     <Brand />
     <nav className={`navlinks${open ? " open" : ""}`} id="site-nav" aria-label="Main navigation">
       {navLinks.map(l => <Link key={l.href} className={path === l.href ? "active" : ""} href={l.href} onClick={() => setOpen(false)}>{l.label}</Link>)}
+      <a href="https://wa.me/252638339599" onClick={() => setOpen(false)}>WhatsApp</a>
+      <a href="mailto:info@plotdevelopments.com" onClick={() => setOpen(false)}>Email</a>
     </nav>
     <Link className="navcta header-action" href="/contact">START A PROJECT ↗</Link>
     <button type="button" className="mobile-toggle" aria-label={open ? "Close menu" : "Open menu"} aria-expanded={open} aria-controls="site-nav" onClick={() => setOpen(!open)}>{open ? "×" : "☰"}</button>
