@@ -1,0 +1,22 @@
+.settings {
+  background: none; border: 0; padding: 8px 0; color: inherit; font: inherit; cursor: pointer;
+}
+.settings:hover { color: white; text-decoration: underline; text-underline-offset: 4px; }
+.panel {
+  position: fixed; z-index: 90; bottom: max(1rem, env(safe-area-inset-bottom)); left: 1rem;
+  width: min(30rem, calc(100% - 2rem)); max-height: 78vh; overflow: auto;
+  padding: 1.15rem 1.3rem; border: 1px solid #bcc6bc; border-top: 3px solid #a48b53;
+  border-radius: 4px; background: #fbfaf5; color: #23372b; box-shadow: 0 5px 26px #17251c30;
+}
+.panel h2 { font: 500 1.4rem/1.2 Georgia,serif; margin: 0; color: inherit; }
+.panel p { margin: .55rem 0 .8rem; font: 400 .95rem/1.5 var(--font,Arial,sans-serif); }
+.panel p a { color: inherit; text-decoration: underline; text-underline-offset: .15em; }
+.actions { display: flex; gap: .6rem; flex-wrap: wrap; }
+.actions button {
+  flex: 1 1 9rem; min-height: 44px; background: #fff; color: #243e2f; border: 1px solid #647b68;
+  border-radius: 3px; padding: .5rem; font: 600 .91rem/1.35 var(--font,Arial,sans-serif); cursor: pointer;
+}
+.actions button:hover, .actions button:focus-visible, .actions button[aria-pressed=true] { background: #e6ede2; }
+@media (max-width: 480px) {
+  .panel { left: .5rem; bottom: max(.5rem, env(safe-area-inset-bottom)); width: calc(100% - 1rem); padding: .9rem 1rem; }
+}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
+import { campaignFields } from "@/lib/campaign";
 import type { Finish, House } from "./measurements";
 import s from "./estimate.module.css";
 
@@ -31,13 +32,9 @@ export default function DownloadEstimate({ inputs, ready }: { inputs: Inputs; re
       plot_width:normalise(plot_width), plot_depth:normalise(plot_depth), landscape_edge,
     } : {}), ground:normalise(inputs.ground), upper:inputs.upper.map(normalise),
       wall:normalise(inputs.wall), landscape:normalise(inputs.landscape) };
-    const query = new URLSearchParams(location.search);
-    let campaign: Record<string,string> = {};
-    try { campaign = JSON.parse(sessionStorage.getItem("plot-attribution") || "{}") || {}; } catch { /* Optional attribution. */ }
+    const { utm_source, utm_medium, utm_campaign } = campaignFields();
     const body = { full_name:name.trim(), phone:phone.trim(), email:email.trim(), consent:true, estimate,
-      utm_source:(query.get("utm_source") || campaign.utm_source || "").slice(0,150),
-      utm_medium:(query.get("utm_medium") || campaign.utm_medium || "").slice(0,150),
-      utm_campaign:(query.get("utm_campaign") || campaign.utm_campaign || "").slice(0,150) };
+      utm_source, utm_medium, utm_campaign };
     const serialised = JSON.stringify(body);
     if (last.current.payload !== serialised) last.current = {payload:serialised, id:crypto.randomUUID()};
     sending.current = true; setBusy(true); setStatus("Qiyaastaada waa la diyaarinayaa…");
