@@ -23,7 +23,10 @@ export default function Home() {
       </div>
     </section>
     <section className="home-portfolio"><div className="shell">
-      <img src="/home.webp" alt="Residential design study with a sheltered entrance and courtyard" loading="lazy"/>
+      <figure>
+        <img src="/studio/pretoria-patio.webp" alt="A two-storey house opening onto a paved courtyard and pool" width={1100} height={825} loading="lazy"/>
+        <figcaption>Residential reference, Pretoria · <a href="https://www.pexels.com/photo/photo-of-the-exterior-of-a-modern-house-with-a-swimming-pool-20702842/">Alexander F Ungerer</a></figcaption>
+      </figure>
       <div><h2 className="feature-heading">Explore the portfolio.</h2>
         <p>See how a home comes together, from the approach to the front door to the rooms where your family spends the day.</p>
         <nav aria-label="Browse the portfolio"><Link className="text-action" href="/projects#studies">Design studies ↗</Link><Link className="text-action" href="/projects#ongoing">Ongoing projects ↗</Link><Link className="text-action" href="/projects#finished">Finished projects ↗</Link></nav>

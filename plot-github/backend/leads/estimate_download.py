@@ -65,8 +65,12 @@ def make_pdf(name, reference, house, finish, rows, total):
              Paragraph(f"Loo diyaariyey <b>{escape(name)}</b>", text),
              Paragraph(f"Hargeysa · {house} · Dhammaystir {finish.lower()} ah", text),
              Paragraph(f"{timezone.localdate():%d/%m/%Y} · Tixraac {escape(str(reference))}", small), Spacer(1, 14)]
-    content = [["Qaybta shaqada", "Cabbirka iyo qiimaha", "Kharashka (USD)"]]
-    content += [[label, detail, usd(amount)] for label, detail, amount in rows]
+    content = [["Qaybta shaqada", "Cabbirka", "Kharashka (USD)"]]
+    for label, detail, amount in rows:
+        measurement = detail.split(" × ", 1)[0]
+        if label == "Korontada iyo tuubooyinka":
+            measurement = "Shaqada oo dhan"
+        content.append([label, measurement, usd(amount)])
     table = Table(content, colWidths=[59*mm, 70*mm, 40*mm], repeatRows=1, hAlign="LEFT")
     table.setStyle(TableStyle([
         ("BACKGROUND",(0,0),(-1,0),colors.HexColor(green)), ("TEXTCOLOR",(0,0),(-1,0),colors.white),
@@ -74,7 +78,7 @@ def make_pdf(name, reference, house, finish, rows, total):
         ("ALIGN",(-1,0),(-1,-1),"RIGHT"), ("ROWBACKGROUNDS",(0,1),(-1,-1),[colors.white,colors.HexColor(pale)]),
         ("TOPPADDING",(0,0),(-1,-1),8), ("BOTTOMPADDING",(0,0),(-1,-1),8)]))
     parts += [table, Spacer(1, 16), Paragraph(f"Wadarta qiyaasta · <b>{usd(total)}</b>", ParagraphStyle("Total",parent=text,fontSize=18,leading=24)),
-              Spacer(1, 14), Paragraph("Qiimaha dhismaha waxa ku jira saqafka, albaabbada, daaqadaha, marmarka sagxadda iyo rinjiga. Dhammaystirka heerka sare ah wuxuu ku darayaa 15% qiimaha dhismaha guriga.", text),
+              Spacer(1, 14), Paragraph("Qiimaha dhismaha waxa ku jira saqafka, albaabbada, daaqadaha, marmarka sagxadda iyo rinjiga.", text),
               Spacer(1, 7), Paragraph("Qiyaastani waa hordhac. Qiimaha kama dambaysta ahi wuxuu ku xiran yahay naqshadda, goobta iyo agabka aad doorato.", text),
               Spacer(1, 10), Paragraph('Su’aal ma qabtaa? <link href="https://wa.me/252638339599" color="#254D40"><u>PLOT kala hadal WhatsApp · +252 63 833 9599</u></link>', text)]
     def furniture(canvas, document):

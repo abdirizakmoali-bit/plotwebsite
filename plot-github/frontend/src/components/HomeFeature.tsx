@@ -6,7 +6,7 @@ import { ListingSearch } from "./ListingSearch";
 import styles from "./HomeFeature.module.css";
 
 const features = [
-  { label: "Build a home", title: "A home on your land.", image: "/home.webp", alt: "Residential design study with a landscaped courtyard and sheltered entrance",
+  { label: "Build a home", title: "A home on your land.", image: "/studio/hargeisa-neighbourhood.webp", alt: "Low-rise homes and walled compounds across a Hargeisa neighbourhood",
     copy: "Design, engineering and construction for the way your family lives in Hargeisa.", action: "Plan your home", href: "/contact?service=Architectural%20design" },
   { label: "Estimate costs", title: "What will it cost to build?", image: "/studio/site.webp", alt: "Residential building under construction",
     copy: "Enter your floor area and compare standard and high finishes for a home in Hargeisa.", action: "Estimate your build cost", href: "/qiyaas" },
@@ -32,6 +32,9 @@ export function HomeFeature() {
       <div className={styles.choices} role="group" aria-label="Choose your project goal">
         {features.map((item,i) => <button key={item.label} onClick={() => setIndex(i)} type="button" aria-pressed={index === i}>{item.label}</button>)}
       </div>
+      {index === 0 && <small className={styles.credit}>
+        Hargeisa, 2010 · <a href="https://commons.wikimedia.org/wiki/File:Hargskyl1.jpg">Retlaw Snellac Photography</a> · <a href="https://creativecommons.org/licenses/by/2.0/" title="Photograph resized and displayed as a crop">CC BY 2.0</a>
+      </small>}
     </div>
   </section>;
 }

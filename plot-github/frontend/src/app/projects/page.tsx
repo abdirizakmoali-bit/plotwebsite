@@ -32,7 +32,7 @@ export default function Projects() {
     </div>
     <section id="studies" className="projects section"><div className="shell">
       <h2 className="feature-heading">Residential design studies</h2>
-      <p className="section-intro">Explore the entrance, living room and kitchen of a residential concept. Open a view to see the design intent.</p>
+      <p className="section-intro">Explore a house in Hargeisa and two interior design studies. Select a view for a closer look.</p>
       <ProjectCards/>
       <Link className="text-action" href="/contact?service=Architectural%20design">Discuss a design for your plot ↗</Link>
     </div></section>

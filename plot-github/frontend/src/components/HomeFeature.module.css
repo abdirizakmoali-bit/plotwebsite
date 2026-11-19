@@ -37,3 +37,6 @@
   .copy { padding-bottom: 22px; }
   .searchArea { margin-bottom: 16px; }
 }
+
+.credit { align-self: flex-end; margin: -4px 0 10px; padding: 3px 8px; background: #152019dc; color: #fff; font: 400 .8rem/1.5 Inter, Arial, sans-serif; }
+.credit a { text-decoration: underline; text-underline-offset: 2px; }

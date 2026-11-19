@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, type FormEvent } from "react";
-import type { Finish, House } from "./pricing";
+import type { Finish, House } from "./measurements";
 import s from "./estimate.module.css";
 
 export type Inputs = { house: House; finish: Finish; ground: string; upper: string[]; wall: string; landscape: string };
