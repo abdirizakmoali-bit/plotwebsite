@@ -56,7 +56,18 @@ export function EnquiryForm(){
   }catch{setNotice('The connection was interrupted. Please try again. Retrying will not create a duplicate enquiry.');}
   finally{clearTimeout(timeout);setBusy(false);}
  }
- if(receipt)return <div className="contact-form lead-success" role="status"><span className="success-icon">✓</span><div className="eyebrow">Enquiry received</div><h3>Your next chapter starts here.</h3><p>Your project details are now with PLOT. We will use your preferred contact method to discuss the next step.</p><p className="receipt">Reference: {receipt}</p><button className="btn" onClick={()=>{setReceipt('');token.current=crypto.randomUUID();move(0);}}>Plan another project →</button></div>;
+ if (receipt) return (
+   <div className="contact-form lead-success" role="status">
+     <span className="success-icon" aria-hidden="true">✓</span>
+     <h3>Enquiry received</h3>
+     <p className="receipt">Reference: {receipt}</p>
+     <button type="button" className="btn" onClick={() => { setReceipt(''); token.current = crypto.randomUUID(); move(0); }}>
+       Plan another project →
+     </button>
+     <p>We will contact you shortly. Thank you for choosing PLOT Developments.</p>
+   </div>
+ );
+
  return <div className="contact-form lead-form"><div className="form-top"><span>YOUR PROJECT, IN THREE STEPS</span><span>0{step+1} / 03</span></div><div className="step-meter" aria-label={`Step ${step+1} of 3`}>{['Your plans','The details','Let’s connect'].map((s,i)=><span key={s} className={i<=step?'complete':''}>{s}</span>)}</div><h3 ref={heading} tabIndex={-1}>{['What are you planning?','Give your vision some context.','Where can we reach you?'][step]}</h3>{!api&&<p className="preview-note">Preview mode: complete your brief to download it. Online enquiries are not connected yet.</p>}
  <form onSubmit={submit}><fieldset disabled={busy}>
  {step===0&&<>{select('service','How can PLOT help?',services)}<div className="formrow">{select('project_stage','Where are you now?',stages)}{select('timeline','When would you like to start?',timelines)}</div>{select('budget','Indicative total project budget (USD)',budgets)}<p className="privacy-note">This helps us understand the scope. It is not a quote or a commitment.</p></>}

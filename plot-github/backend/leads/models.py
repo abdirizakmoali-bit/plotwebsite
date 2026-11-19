@@ -33,6 +33,8 @@ class Enquiry(models.Model):
     follow_up_on = models.DateField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     is_reviewed = models.BooleanField(default=False)
+    email_due_at = models.DateTimeField(null=True, blank=True, editable=False, db_index=True)
+    email_sent_at = models.DateTimeField(null=True, blank=True, editable=False)
 
     class Meta:
         ordering = ['-created_at']

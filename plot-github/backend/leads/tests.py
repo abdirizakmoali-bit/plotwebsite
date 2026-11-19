@@ -1,4 +1,7 @@
+import json
 import uuid
+from io import BytesIO
+from unittest.mock import patch
 from django.core.cache import cache
 from django.test import TestCase
 from django.urls import reverse
@@ -22,6 +25,44 @@ class EnquiryTests(TestCase):
         first=self.post();second=self.post()
         self.assertEqual(first.json()['reference'],second.json()['reference'])
         self.assertEqual(Enquiry.objects.count(),1)
+    @patch('leads.management.commands.deliver_enquiries.urlopen')
+    def test_email_reaches_only_plot_and_retry_does_not_resend(self, request):
+        from .management.commands.deliver_enquiries import deliver_next
+        email = 'client@example.com'
+        self.assertEqual(self.post(email=email).status_code, 201)
+        request.return_value = BytesIO(b'{"id":"accepted"}')
+        self.assertTrue(deliver_next())
+        lead = Enquiry.objects.get()
+        self.assertIsNotNone(lead.email_sent_at)
+        self.assertIsNone(lead.email_due_at)
+        sent = request.call_args.args[0]
+        message = json.loads(sent.data)
+        self.assertEqual(message['to'], ['info@plotdevelopments.com'])
+        self.assertEqual(message['reply_to'], email)
+        self.assertIn(lead.phone, message['text'])
+        self.assertIn(lead.brief, message['text'])
+        self.assertIn(str(lead.reference), sent.get_header('Idempotency-key'))
+        self.post(email=email)
+        self.assertFalse(deliver_next())
+        request.assert_called_once()
+
+    @patch('leads.management.commands.deliver_enquiries.urlopen')
+    def test_failed_delivery_retains_enquiry_and_retries_without_customer_email(self, request):
+        from django.utils import timezone
+        from .management.commands.deliver_enquiries import deliver_next
+        self.assertEqual(self.post().status_code, 201)
+        request.side_effect = [TimeoutError(), BytesIO(b'{"id":"accepted"}')]
+        self.assertTrue(deliver_next())
+        lead = Enquiry.objects.get()
+        self.assertIsNone(lead.email_sent_at)
+        self.assertGreater(lead.email_due_at, timezone.now())
+        self.assertFalse(deliver_next())
+        Enquiry.objects.filter(pk=lead.pk).update(email_due_at=timezone.now())
+        self.assertTrue(deliver_next())
+        self.assertNotIn('reply_to', json.loads(request.call_args.args[0].data))
+        lead.refresh_from_db()
+        self.assertIsNotNone(lead.email_sent_at)
+
     def test_missing_or_false_consent_rejected(self):
         self.assertEqual(self.post(consent=False).status_code,400)
         del self.payload['consent']

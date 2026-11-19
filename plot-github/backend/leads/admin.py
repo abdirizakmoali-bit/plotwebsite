@@ -7,13 +7,13 @@ class EnquiryAdmin(admin.ModelAdmin):
     list_filter = ('status','service','timeline','budget','contact_preference','created_at')
     search_fields = ('full_name','phone','email','location','brief','utm_campaign')
     list_editable = ('status','follow_up_on')
-    readonly_fields = ('reference','submission_id','created_at','consent_at','privacy_version')
+    readonly_fields = ('reference','submission_id','created_at','consent_at','privacy_version','email_due_at','email_sent_at')
     fieldsets = (
         ('Follow-up', {'fields':('status','follow_up_on','notes','is_reviewed')}),
         ('Contact', {'fields':('full_name','phone','email','contact_preference')}),
         ('Project', {'fields':('service','location','budget','timeline','project_stage','brief')}),
         ('Attribution & consent', {'fields':('utm_source','utm_medium','utm_campaign','landing_path','consent','consent_at','privacy_version')}),
-        ('Record', {'fields':('reference','submission_id','created_at')}),
+        ('Record', {'fields':('reference','submission_id','created_at','email_due_at','email_sent_at')}),
     )
 
 

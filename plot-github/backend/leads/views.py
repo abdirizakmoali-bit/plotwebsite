@@ -1,5 +1,6 @@
 from django.db.models import Q
 from django.http import JsonResponse
+from django.utils import timezone
 from django.views.decorators.http import require_safe
 from .models import LandPlot
 from rest_framework import generics, permissions, throttling, status
@@ -14,7 +15,7 @@ class CreateEnquiry(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        lead = serializer.save()
+        lead = serializer.save(email_due_at=timezone.now())
         # Never return contact details or expose a public list/retrieve endpoint.
         return Response({'reference':str(lead.reference), 'message':'Your enquiry has been received.'}, status=status.HTTP_201_CREATED)
 
