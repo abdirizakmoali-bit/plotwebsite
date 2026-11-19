@@ -90,7 +90,7 @@ export function HomeFeature() {
           <h1>{service.title}</h1>
           <p className={styles.description}>{service.copy}</p>
           <Link className={styles.action} href={service.href} onPointerEnter={() => setPlaying(false)}>
-            {service.action}<span aria-hidden="true">↗︎</span>
+            {service.action}<span className={styles.actionArrow} aria-hidden="true" />
           </Link>
         </div>
         <div className={styles.searchArea}>

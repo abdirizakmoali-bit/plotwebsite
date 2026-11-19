@@ -32,6 +32,8 @@
 .copy h1 { max-width: 12ch; margin: 0; font: 400 clamp(60px, 6.8vw, 112px)/.98 Georgia, serif; letter-spacing: -.055em; text-wrap: balance; }
 .description { font: 400 clamp(16px, 1.25vw, 20px)/1.5 Inter, Arial, sans-serif; max-width: 43ch; margin: 18px 0 22px; }
 .action { display: inline-flex; align-items: center; gap: 28px; min-height: 46px; padding: 10px 20px; background: #fbfaf5; color: #202521; border-radius: 2px; }
+.actionArrow { width: 9px; height: 9px; border-top: 1.5px solid currentColor; border-right: 1.5px solid currentColor; position: relative; }
+.actionArrow::after { content: ""; position: absolute; right: 0; top: 0; width: 12px; border-top: 1.5px solid currentColor; transform-origin: top right; transform: rotate(-45deg); }
 .action:hover { background: #eee5cf; }
 .action:focus-visible, .choices button:focus-visible, .credit a:focus-visible { outline: 2px solid #f9d99a; outline-offset: 3px; }
 
