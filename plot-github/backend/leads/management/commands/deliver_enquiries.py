@@ -1,10 +1,14 @@
+import json
 import logging
 import time
 from datetime import timedelta
+from http.client import HTTPException
 from smtplib import SMTPResponseException
+from urllib.error import HTTPError
+from urllib.request import Request, urlopen
 
 from django.conf import settings
-from django.core.mail import EmailMessage, get_connection
+from django.core.mail import EmailMessage
 from django.core.management.base import BaseCommand
 from django.db import OperationalError, close_old_connections
 from django.utils import timezone
@@ -33,6 +37,26 @@ def send_notification(enquiry):
         reply_to=[enquiry.email] if enquiry.email else [],
         headers={"Message-ID": f"<enquiry.{enquiry.reference}@plotdevelopments.com>"},
     )
+    if settings.RESEND_API_KEY:
+        payload = {
+            "from": "PLOT Developments <enquiries@notify.plotdevelopments.com>",
+            "to": message.to,
+            "subject": message.subject,
+            "text": message.body,
+        }
+        if message.reply_to:
+            payload["reply_to"] = message.reply_to
+        request = Request("https://api.resend.com/emails", data=json.dumps(payload).encode(), headers={
+            "Authorization": f"Bearer {settings.RESEND_API_KEY}",
+            "Content-Type": "application/json",
+            "User-Agent": "PLOT-Enquiries/1.0",
+            "Idempotency-Key": f"enquiry/{enquiry.reference}",
+        })
+        with urlopen(request, timeout=8) as response:
+            result = json.load(response)
+            if not isinstance(result, dict) or not result.get("id"):
+                raise ValueError("Resend did not accept the notification")
+        return
     if message.send() != 1:
         raise OSError("Enquiry email was not accepted")
 
@@ -49,8 +73,12 @@ def deliver_next():
         return True
     try:
         send_notification(enquiry)
-    except (OSError, ValueError) as error:
-        detail = f"SMTP {error.smtp_code}" if isinstance(error, SMTPResponseException) else type(error).__name__
+    except (OSError, HTTPException, ValueError) as error:
+        detail = type(error).__name__
+        if isinstance(error, HTTPError):
+            detail = f"HTTP {error.code}"
+        elif isinstance(error, SMTPResponseException):
+            detail = f"SMTP {error.smtp_code}"
         logger.warning("Enquiry email %s is queued for retry (%s)", enquiry.reference, detail)
     else:
         Enquiry.objects.filter(pk=enquiry.pk, email_due_at=reserved_until).update(
@@ -62,14 +90,8 @@ class Command(BaseCommand):
     help = "Deliver queued project enquiry emails."
 
     def handle(self, *args, **options):
-        if not settings.EMAIL_HOST_PASSWORD:
-            # Check the encrypted SMTP greeting separately from mailbox authentication.
-            try:
-                with get_connection():
-                    self.stdout.write("Namecheap SMTP is reachable. Enquiry email is waiting for EMAIL_HOST_PASSWORD.")
-            except OSError as error:
-                self.stderr.write(f"Could not connect to Namecheap SMTP ({type(error).__name__}). "
-                                  "Enquiries remain queued. Check outbound SMTP access and EMAIL_HOST_PASSWORD.")
+        if not (settings.RESEND_API_KEY or settings.EMAIL_HOST_PASSWORD):
+            self.stdout.write("Website enquiries are queued. Set RESEND_API_KEY for delivery on Railway Hobby.")
             return
         while True:
             close_old_connections()

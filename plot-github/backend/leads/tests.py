@@ -1,8 +1,10 @@
+import json
 import uuid
+from io import BytesIO
 from unittest.mock import patch
 from django.core import mail
 from django.core.cache import cache
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 from .models import Enquiry
 
@@ -41,6 +43,33 @@ class EnquiryTests(TestCase):
         self.post(email=email)
         self.assertFalse(deliver_next())
         self.assertEqual(len(mail.outbox), 1)
+
+    @override_settings(RESEND_API_KEY='dummy-testing-key', EMAIL_HOST_PASSWORD='')
+    @patch('leads.management.commands.deliver_enquiries.urlopen')
+    def test_hobby_delivery_uses_verified_sender_and_retries_safely(self, send_request):
+        from django.utils import timezone
+        from .management.commands.deliver_enquiries import deliver_next
+        self.assertEqual(self.post(email='client@example.com').status_code, 201)
+        send_request.side_effect = [BytesIO(b'{}'), BytesIO(b'{"id":"accepted"}')]
+        self.assertTrue(deliver_next())
+        lead = Enquiry.objects.get()
+        self.assertIsNone(lead.email_sent_at)
+        self.assertIsNotNone(lead.email_due_at)
+        Enquiry.objects.filter(pk=lead.pk).update(email_due_at=timezone.now())
+        self.assertTrue(deliver_next())
+        first, second = [call.args[0] for call in send_request.call_args_list]
+        self.assertEqual(first.get_header('Idempotency-key'), f'enquiry/{lead.reference}')
+        self.assertEqual(first.get_header('Idempotency-key'), second.get_header('Idempotency-key'))
+        self.assertEqual(first.data, second.data)
+        self.assertEqual(second.full_url, 'https://api.resend.com/emails')
+        payload = json.loads(second.data)
+        self.assertEqual(payload['to'], ['info@plotdevelopments.com'])
+        self.assertEqual(payload['from'], 'PLOT Developments <enquiries@notify.plotdevelopments.com>')
+        self.assertEqual(payload['reply_to'], ['client@example.com'])
+        self.assertIn(lead.brief, payload['text'])
+        lead.refresh_from_db()
+        self.assertIsNotNone(lead.email_sent_at)
+        self.assertFalse(deliver_next())
 
     def test_failed_delivery_retains_enquiry_and_retries_without_customer_email(self):
         from django.utils import timezone
