@@ -169,6 +169,22 @@ class EstimateDownloadTests(TestCase):
             serializer.is_valid(raise_exception=True)
             self.assertEqual(str(calculate(serializer.validated_data)[1]), expected)
 
+    def test_public_site_can_submit_and_read_the_pdf(self):
+        origin = "https://plotdevelopments.com"
+        preflight = {"HTTP_ORIGIN": origin, "HTTP_ACCESS_CONTROL_REQUEST_METHOD": "POST",
+                     "HTTP_ACCESS_CONTROL_REQUEST_HEADERS": "content-type"}
+        with self.settings(CORS_ALLOWED_ORIGINS=[], ESTIMATE_PREVIEW_ORIGIN=""):
+            response = self.client.options(self.url, **preflight)
+            self.assertEqual(response.get("Access-Control-Allow-Origin"), origin)
+            self.assertIn("POST", response["Access-Control-Allow-Methods"])
+            self.assertIn("content-type", response["Access-Control-Allow-Headers"])
+            result = self.client.post(self.url, self.data, content_type="application/json", HTTP_ORIGIN=origin)
+            self.assertEqual(result.status_code, 200)
+            self.assertEqual(result.get("Access-Control-Allow-Origin"), origin)
+            self.assertTrue(result.content.startswith(b"%PDF"))
+            preflight["HTTP_ORIGIN"] = "https://unrelated.example"
+            self.assertIsNone(self.client.options(self.url, **preflight).get("Access-Control-Allow-Origin"))
+
     def test_preview_origin_only_applies_to_download(self):
         origin = "https://preview.example.com"
         with self.settings(ESTIMATE_PREVIEW_ORIGIN=origin):
