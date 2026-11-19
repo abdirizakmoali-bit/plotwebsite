@@ -64,5 +64,10 @@ if not DEBUG and SECRET_KEY == "local-development-only-change-me":
 if os.environ.get("REDIS_URL"):
     CACHES = {"default": {"BACKEND": "django.core.cache.backends.redis.RedisCache", "LOCATION": os.environ["REDIS_URL"]}}
 
-RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
-ENQUIRY_FROM_EMAIL = os.environ.get("ENQUIRY_FROM_EMAIL", "PLOT Developments <enquiries@plotdevelopments.com>")
+EMAIL_HOST = "mail.privateemail.com"
+EMAIL_HOST_USER = "info@plotdevelopments.com"
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_TIMEOUT = 8
+DEFAULT_FROM_EMAIL = f"PLOT Developments <{EMAIL_HOST_USER}>"

@@ -1,13 +1,11 @@
-import json
 import logging
 import time
 from datetime import timedelta
-from http.client import HTTPException
-from urllib.error import HTTPError
-from urllib.request import Request, urlopen
+from smtplib import SMTPResponseException
 
 from django.conf import settings
-from django.core.management.base import BaseCommand, CommandError
+from django.core.mail import EmailMessage, get_connection
+from django.core.management.base import BaseCommand
 from django.db import OperationalError, close_old_connections
 from django.utils import timezone
 
@@ -27,21 +25,16 @@ def send_notification(enquiry):
         f"Stage: {enquiry.project_stage}\nBudget: {enquiry.budget}\nTimeline: {enquiry.timeline}\n\n"
         f"Project brief:\n{enquiry.brief}\n\nReference: {enquiry.reference}"
     )
-    message = {
-        "from": settings.ENQUIRY_FROM_EMAIL,
-        "to": [RECIPIENT],
-        "subject": f"PLOT website enquiry | {enquiry.service} | {enquiry.reference}",
-        "text": text,
-    }
-    if enquiry.email:
-        message["reply_to"] = enquiry.email
-    request = Request("https://api.resend.com/emails", data=json.dumps(message).encode(),
-                      headers={"Authorization": f"Bearer {settings.RESEND_API_KEY}",
-                               "Content-Type": "application/json", "User-Agent": "PLOT-Enquiries/1.0",
-                               "Idempotency-Key": f"plot-enquiry/{enquiry.reference}"})
-    with urlopen(request, timeout=8) as response:
-        if not json.load(response).get("id"):
-            raise ValueError("Missing provider message ID")
+    message = EmailMessage(
+        subject=f"PLOT website enquiry | {enquiry.service} | {enquiry.reference}",
+        body=text,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        to=[RECIPIENT],
+        reply_to=[enquiry.email] if enquiry.email else [],
+        headers={"Message-ID": f"<enquiry.{enquiry.reference}@plotdevelopments.com>"},
+    )
+    if message.send() != 1:
+        raise OSError("Enquiry email was not accepted")
 
 
 def deliver_next():
@@ -56,8 +49,8 @@ def deliver_next():
         return True
     try:
         send_notification(enquiry)
-    except (OSError, HTTPException, ValueError) as error:
-        detail = f"HTTP {error.code}" if isinstance(error, HTTPError) else type(error).__name__
+    except (OSError, ValueError) as error:
+        detail = f"SMTP {error.smtp_code}" if isinstance(error, SMTPResponseException) else type(error).__name__
         logger.warning("Enquiry email %s is queued for retry (%s)", enquiry.reference, detail)
     else:
         Enquiry.objects.filter(pk=enquiry.pk, email_due_at=reserved_until).update(
@@ -69,8 +62,15 @@ class Command(BaseCommand):
     help = "Deliver queued project enquiry emails."
 
     def handle(self, *args, **options):
-        if not settings.RESEND_API_KEY:
-            raise CommandError("Set RESEND_API_KEY to deliver enquiry emails.")
+        if not settings.EMAIL_HOST_PASSWORD:
+            # Check the encrypted SMTP greeting separately from mailbox authentication.
+            try:
+                with get_connection():
+                    self.stdout.write("Namecheap SMTP is reachable. Enquiry email is waiting for EMAIL_HOST_PASSWORD.")
+            except OSError as error:
+                self.stderr.write(f"Could not connect to Namecheap SMTP ({type(error).__name__}). "
+                                  "Enquiries remain queued. Check outbound SMTP access and EMAIL_HOST_PASSWORD.")
+            return
         while True:
             close_old_connections()
             try:

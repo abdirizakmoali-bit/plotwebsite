@@ -56,7 +56,7 @@ The host must terminate HTTPS and pass `X-Forwarded-Proto` accurately. Do not tr
 5. Check public GET requests cannot list enquiries and admin requires sign-in.
 6. Test mobile navigation, gallery, form validation, Back/Continue and confirmation.
 7. Confirm privacy contact arrangements and set an operational retention/deletion policy before collecting real data.
-8. Verify the sending domain in Resend, then set the sending key as `RESEND_API_KEY` on the backend and deploy. The worker sends new and queued contact-form enquiries to `info@plotdevelopments.com`. It uses `enquiries@plotdevelopments.com` as the sender by default. Set `ENQUIRY_FROM_EMAIL` if you verify a different sender. The enquiry record in admin shows the next delivery attempt or the time the provider accepted the email.
+8. For enquiry emails, enable SMTP in Namecheap Private Email for `info@plotdevelopments.com`. Create a mailbox app password, set it as the backend's secret `EMAIL_HOST_PASSWORD`, and deploy. The worker uses encrypted SMTP at `mail.privateemail.com:465` and sends new and queued project enquiries to that mailbox. Railway requires outbound SMTP access for this setup. The enquiry record in admin shows the next attempt or the time the mail server accepted the email.
 
 ## Upgrading an existing database
 
