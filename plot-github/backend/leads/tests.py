@@ -63,3 +63,30 @@ class PlotCatalogueTests(TestCase):
         LandPlot.objects.filter(status=LandPlot.Status.AVAILABLE).update(status=LandPlot.Status.SOLD)
         self.assertEqual(self.client.get(reverse('available-plots')).json()['plots'], [])
         self.assertEqual(self.client.post(reverse('available-plots'), {}).status_code, 405)
+
+    def test_search_by_category_and_words_preserves_land_catalogue(self):
+        from .models import LandPlot
+
+        def add(title, kind, status='available'):
+            return LandPlot.objects.create(title=title, kind=kind, location='Jigjiga Yar, Hargeisa',
+                                           area_m2=200, status=status)
+        land = add('Corner parcel', 'land')
+        house = add('Courtyard bungalow', 'house')
+        flat = add('City apartment', 'apartment')
+        for status in ['draft', 'reserved', 'sold']:
+            add('Off market house', 'house', status)
+
+        def ids(**params):
+            response = self.client.get(reverse('available-listings'), params)
+            self.assertEqual(response.status_code, 200)
+            return {item['id'] for item in response.json()['listings']}
+
+        self.assertEqual(ids(), {land.id, house.id, flat.id})
+        self.assertEqual(ids(category='property', q='  hArGeIsA  '), {house.id, flat.id})
+        self.assertEqual(ids(category='property', q='jigjiga bungalow'), {house.id})
+        self.assertEqual(ids(category='land', q='plot jigjiga'), {land.id})
+        self.assertEqual(ids(category='land', q='apartment'), set())
+        self.assertEqual(ids(q='properties'), {house.id, flat.id})
+        self.assertEqual(ids(q='no match here'), set())
+        old_catalogue = self.client.get(reverse('available-plots')).json()['plots']
+        self.assertEqual([row['id'] for row in old_catalogue], [land.id])

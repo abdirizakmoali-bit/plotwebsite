@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.http import JsonResponse
 from django.views.decorators.http import require_safe
 from .models import LandPlot
@@ -19,12 +20,29 @@ class CreateEnquiry(generics.CreateAPIView):
 
 
 @require_safe
-def available_plots(request):
-    listings = LandPlot.objects.filter(status=LandPlot.Status.AVAILABLE).values(
-        'id', 'title', 'location', 'area_m2', 'dimensions', 'price_usd', 'description', 'photo_url',
-    )
-    response = JsonResponse({'plots': list(listings)})
-    # This catalogue is public and fetched by the separately hosted storefront.
+def available_listings(request, plots_only=False):
+    category = 'land' if plots_only else request.GET.get('category', 'all')
+    listings = LandPlot.objects.filter(status=LandPlot.Status.AVAILABLE)
+    if category == 'land':
+        listings = listings.filter(kind=LandPlot.Kind.LAND)
+    elif category == 'property':
+        listings = listings.exclude(kind=LandPlot.Kind.LAND)
+    elif category != 'all':
+        return JsonResponse({'error': 'Choose all, property or land.'}, status=400)
+
+    query = request.GET.get('q', '')[:120].replace('\x00', ' ')
+    for word in query.split():
+        matches = Q(title__icontains=word) | Q(location__icontains=word) | Q(description__icontains=word) | Q(kind__icontains=word)
+        if word.casefold() in ('land', 'plot', 'plots'):
+            matches |= Q(kind=LandPlot.Kind.LAND)
+        elif word.casefold() in ('property', 'properties'):
+            matches |= ~Q(kind=LandPlot.Kind.LAND)
+        listings = listings.filter(matches)
+
+    fields = ['id', 'title', 'location', 'area_m2', 'dimensions', 'price_usd', 'description', 'photo_url']
+    if not plots_only:
+        fields.append('kind')
+    response = JsonResponse({'plots' if plots_only else 'listings': list(listings.values(*fields))})
     response['Access-Control-Allow-Origin'] = '*'
     response['Cache-Control'] = 'no-store'
     return response

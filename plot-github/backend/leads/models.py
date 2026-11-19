@@ -43,12 +43,20 @@ class Enquiry(models.Model):
 
 
 class LandPlot(models.Model):
+    class Kind(models.TextChoices):
+        LAND = 'land', 'Land'
+        HOUSE = 'house', 'House'
+        APARTMENT = 'apartment', 'Apartment'
+        COMMERCIAL = 'commercial', 'Commercial property'
+        OTHER = 'other', 'Other property'
+
     class Status(models.TextChoices):
         DRAFT = 'draft', 'Draft'
         AVAILABLE = 'available', 'Available'
         RESERVED = 'reserved', 'Reserved'
         SOLD = 'sold', 'Sold'
 
+    kind = models.CharField('listing type', max_length=12, choices=Kind.choices, default=Kind.LAND)
     title = models.CharField(max_length=120)
     location = models.CharField(max_length=150, help_text='Neighbourhood and town, as shown to buyers.')
     area_m2 = models.DecimalField('area (m²)', max_digits=12, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))])
@@ -56,13 +64,14 @@ class LandPlot(models.Model):
     price_usd = models.DecimalField('asking price (USD)', max_digits=14, decimal_places=2, blank=True, null=True,
                                     validators=[MinValueValidator(Decimal('0.01'))], help_text='Leave blank for price on request.')
     description = models.TextField(blank=True, max_length=800)
-    photo_url = models.URLField('plot photo URL', max_length=1000, blank=True,
-                                validators=[URLValidator(schemes=['https'])], help_text='HTTPS link to a photo of this plot.')
+    photo_url = models.URLField('listing photo URL', max_length=1000, blank=True,
+                                validators=[URLValidator(schemes=['https'])], help_text='HTTPS link to a photo of this listing.')
     status = models.CharField(max_length=12, choices=Status.choices, default=Status.DRAFT,
-                              help_text='Only available plots appear on the website.')
+                              help_text='Only available listings appear on the website.')
 
     class Meta:
         ordering = ['-id']
+        verbose_name = 'sale listing'
 
     def __str__(self):
         return self.title
