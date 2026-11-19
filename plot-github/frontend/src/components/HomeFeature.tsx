@@ -8,7 +8,7 @@ const features = [
   { label: "Build a home", title: "A home on your land.", image: "/home.webp", alt: "Residential design study with a landscaped courtyard and sheltered entrance",
     copy: "Design, engineering and construction for the way your family lives in Hargeisa.", action: "Plan your home", href: "/contact?service=Architectural%20design" },
   { label: "Estimate costs", title: "What will it cost to build?", image: "/studio/site.webp", alt: "Residential building under construction",
-    copy: "Bring your drawings. Explore quantities, finishes and allowances before you compare builders.", action: "Request a cost estimate", href: "/contact?service=Cost%20estimation%20%2F%20BOQ" },
+    copy: "Enter your floor area and compare standard and high finishes for a home in Hargeisa.", action: "Estimate your build cost", href: "/qiyaas" },
   { label: "Develop land", title: "What could your land become?", image: "/studio/residences.webp", alt: "Residential buildings overlooking a landscaped path",
     copy: "Explore housing options for your plot, from its first layout to a feasibility brief.", action: "Discuss your land", href: "/contact?service=Property%20development" }
 ];
