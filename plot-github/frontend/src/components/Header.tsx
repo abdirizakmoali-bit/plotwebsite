@@ -47,7 +47,7 @@ function Navigation({ path }: { path: string }) {
     const outside = (event: PointerEvent) => {
       if (event.target instanceof Node && !header.current?.contains(event.target)) close();
     };
-    const breakpoint = window.matchMedia("(max-width: 760px)");
+    const breakpoint = window.matchMedia("(max-width: 900px)");
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     document.addEventListener("pointerdown", outside);
@@ -88,6 +88,7 @@ function Navigation({ path }: { path: string }) {
         onClick={() => { setMobileOpen(!mobileOpen); setGroup(null); }}>{mobileOpen ? "Close" : "Menu"}<span aria-hidden="true">{mobileOpen ? "×" : "☰"}</span></button>
       <nav id="site-nav" aria-label="Main navigation" className={styles.nav} data-open={mobileOpen}>
         {dropdown("Services", "nav-services")}{dropdown("Projects", "nav-projects")}
+        <Link href="/plots" aria-current={current === "/plots" ? "page" : undefined} onClick={close}>Plots for sale</Link>
         <Link href="/insights" aria-current={current === "/insights" ? "page" : undefined} onClick={close}>Insights</Link><Link href="/about" aria-current={current === "/about" ? "page" : undefined} onClick={close}>About</Link>
         {dropdown("Get in touch", "nav-contact")}
       </nav>

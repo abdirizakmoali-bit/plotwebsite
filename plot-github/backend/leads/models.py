@@ -1,4 +1,6 @@
 import uuid
+from decimal import Decimal
+from django.core.validators import MinValueValidator, URLValidator
 from django.db import models
 
 SERVICES = [(s, s) for s in ['Architectural design', 'Structural engineering', 'Cost estimation / BOQ', 'Construction management', 'Property development', 'Other / Not sure yet']]
@@ -38,3 +40,29 @@ class Enquiry(models.Model):
 
     def __str__(self):
         return f'{self.full_name} | {self.service}'
+
+
+class LandPlot(models.Model):
+    class Status(models.TextChoices):
+        DRAFT = 'draft', 'Draft'
+        AVAILABLE = 'available', 'Available'
+        RESERVED = 'reserved', 'Reserved'
+        SOLD = 'sold', 'Sold'
+
+    title = models.CharField(max_length=120)
+    location = models.CharField(max_length=150, help_text='Neighbourhood and town, as shown to buyers.')
+    area_m2 = models.DecimalField('area (m²)', max_digits=12, decimal_places=2, validators=[MinValueValidator(Decimal('0.01'))])
+    dimensions = models.CharField(max_length=80, blank=True, help_text='Optional, for example 18 × 24 m.')
+    price_usd = models.DecimalField('asking price (USD)', max_digits=14, decimal_places=2, blank=True, null=True,
+                                    validators=[MinValueValidator(Decimal('0.01'))], help_text='Leave blank for price on request.')
+    description = models.TextField(blank=True, max_length=800)
+    photo_url = models.URLField('plot photo URL', max_length=1000, blank=True,
+                                validators=[URLValidator(schemes=['https'])], help_text='HTTPS link to a photo of this plot.')
+    status = models.CharField(max_length=12, choices=Status.choices, default=Status.DRAFT,
+                              help_text='Only available plots appear on the website.')
+
+    class Meta:
+        ordering = ['-id']
+
+    def __str__(self):
+        return self.title

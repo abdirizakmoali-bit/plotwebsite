@@ -14,6 +14,14 @@ export default function Home() {
     <HomeFeature/>
     <section className="shell disciplines"><h2>From land to keys.</h2><div className="tiles">{features.map(f => <Link key={f.title} href={f.link}>
       <img src={'/studio/' + f.image + '.webp'} alt={f.alt} loading="lazy"/><h3>{f.title} ↗</h3><p>{f.text}</p></Link>)}</div></section>
+    <section className="home-land">
+      <div className="shell">
+        <div><h2 className="feature-heading">Plots for sale in Hargeisa.</h2>
+          <p>Looking for land? Browse the listings or tell us the area, plot size and budget you have in mind.</p>
+        </div>
+        <Link className="text-action" href="/plots">Explore plots for sale</Link>
+      </div>
+    </section>
     <section className="home-portfolio"><div className="shell">
       <img src="/home.webp" alt="Residential design study with a sheltered entrance and courtyard" loading="lazy"/>
       <div><h2 className="feature-heading">Explore the portfolio.</h2>

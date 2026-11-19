@@ -44,3 +44,22 @@ class EnquiryTests(TestCase):
         for _ in range(20):
             self.assertEqual(self.post().status_code,201)
         self.assertEqual(self.post().status_code,429)
+
+
+class PlotCatalogueTests(TestCase):
+    def test_only_available_plots_are_public(self):
+        from .models import LandPlot
+
+        for status in LandPlot.Status:
+            LandPlot.objects.create(title=status.label, location='Hargeisa', area_m2=432, status=status)
+        response = self.client.get(reverse('available-plots'), HTTP_ORIGIN='https://plotdevelopments.com')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(response.headers['Access-Control-Allow-Origin'], ('*', 'https://plotdevelopments.com'))
+        listings = response.json()['plots']
+        self.assertEqual([plot['title'] for plot in listings], ['Available'])
+        self.assertEqual(listings[0]['area_m2'], '432.00')
+        self.assertIsNone(listings[0]['price_usd'])
+
+        LandPlot.objects.filter(status=LandPlot.Status.AVAILABLE).update(status=LandPlot.Status.SOLD)
+        self.assertEqual(self.client.get(reverse('available-plots')).json()['plots'], [])
+        self.assertEqual(self.client.post(reverse('available-plots'), {}).status_code, 405)

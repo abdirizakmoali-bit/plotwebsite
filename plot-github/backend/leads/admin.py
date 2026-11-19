@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Enquiry
+from .models import Enquiry, LandPlot
 
 @admin.register(Enquiry)
 class EnquiryAdmin(admin.ModelAdmin):
@@ -15,6 +15,16 @@ class EnquiryAdmin(admin.ModelAdmin):
         ('Attribution & consent', {'fields':('utm_source','utm_medium','utm_campaign','landing_path','consent','consent_at','privacy_version')}),
         ('Record', {'fields':('reference','submission_id','created_at')}),
     )
-admin.site.site_header = 'PLOT | Lead management'
+
+
+@admin.register(LandPlot)
+class LandPlotAdmin(admin.ModelAdmin):
+    list_display = ('title', 'location', 'area_m2', 'price_usd', 'status')
+    list_filter = ('status',)
+    search_fields = ('title', 'location')
+    list_editable = ('status',)
+
+
+admin.site.site_header = 'PLOT | Sales and enquiries'
 admin.site.site_title = 'PLOT Admin'
 admin.site.index_title = 'Your project pipeline'

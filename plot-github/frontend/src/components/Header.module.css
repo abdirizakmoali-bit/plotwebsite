@@ -41,7 +41,7 @@ button[aria-expanded="true"] .chevron { transform:translateY(2px) rotate(225deg)
 .panel a { padding:0 12px; }
 .panel a:hover,.panel a:focus-visible { background:#eceee6; }
 .toggle { display:none; }
-@media(max-width:760px) {
+@media(max-width:900px) {
   .header { --bar-height:70px; }
   .bar { width:calc(100% - 40px); }
   .brand img { width:123px; }

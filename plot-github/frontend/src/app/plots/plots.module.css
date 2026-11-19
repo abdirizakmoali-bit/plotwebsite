@@ -1,0 +1,35 @@
+.page { color: #232923; }
+.intro { background: #eef0e9; border-bottom: 1px solid #d8dcd2; padding-block: clamp(44px, 6vw, 88px); }
+.place { color: #54634f; font-size: .88rem; font-weight: 600; margin: 0; letter-spacing: .06em; }
+.intro h1 { font: 400 clamp(3.2rem, 7.4vw, 7.2rem)/1.04 Georgia, serif; letter-spacing: -.055em; margin: 14px 0 20px; }
+.intro p:last-child { font-size: 1.125rem; max-width: 56ch; margin: 0; color: #485347; line-height: 1.6; }
+.layout { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr); align-items: start; gap: clamp(28px, 5vw, 80px); padding-block: clamp(40px, 6vw, 84px); }
+.heading,.card h3 { font: 400 clamp(1.9rem, 3.3vw, 3.1rem)/1.1 Georgia, serif; letter-spacing: -.035em; margin: 0 0 20px; }
+.notice { border-block: 1px solid #d8dcd2; color: #505a4f; line-height: 1.7; padding: 24px 0; }
+.brief { background: #29342b; color: #fff; padding: clamp(22px, 3vw, 44px); }
+.brief h2 { font-size: clamp(1.9rem, 2.8vw, 2.8rem); margin-bottom: 10px; }
+.brief p { line-height: 1.6; margin: 0 0 24px; color: #e0e5dc; }
+.fields,.fields label { display: grid; gap: 8px; }
+.fields { gap: 18px; }
+.fields label,.facts dt { font-size: .9rem; }
+.fields input { min-width: 0; width: 100%; border: 1px solid #8b968a; border-radius: 2px; padding: 12px 10px; background: #fff; color: #242923; font-size: 1rem; }
+.pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.action { background: #f4f3eb; color: #253028; display: inline-block; justify-self: start; padding: 13px 18px; border-radius: 2px; font-weight: 600; }
+.action:hover { background: #dfdfd1; }
+.link { display: table; margin-top: 12px; background: transparent; color: inherit; padding: 8px 0; border: 0; border-bottom: 1px solid; font-weight: 600; }
+.cards { display: grid; gap: 24px; }
+.card { border: 1px solid #d8dcd2; overflow-wrap: anywhere; }
+.card img { display: block; width: 100%; aspect-ratio: 2 / 1; object-fit: cover; }
+.cardBody { padding: clamp(20px, 3vw, 32px); }
+.meta { color: #53624c; margin: 0 0 10px; font-size: .9rem; }
+.card h3 { font-size: clamp(1.7rem, 2.5vw, 2.5rem); }
+.facts { display: flex; flex-wrap: wrap; gap: 14px 32px; padding-block: 16px; border-block: 1px solid #dde0d7; margin: 0; }
+.facts dt { color: #596455; }
+.facts dd { margin: 4px 0 0; font-weight: 600; }
+.description { white-space: pre-line; line-height: 1.7; }
+@media (max-width: 790px) {
+  .layout { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 400px) {
+  .pair { grid-template-columns: minmax(0, 1fr); }
+}
