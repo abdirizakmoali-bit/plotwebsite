@@ -67,7 +67,10 @@ if os.environ.get("REDIS_URL"):
 EMAIL_HOST = "mail.privateemail.com"
 EMAIL_HOST_USER = "info@plotdevelopments.com"
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
-EMAIL_PORT = 465
-EMAIL_USE_SSL = True
+EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "587"))
+if EMAIL_PORT not in (465, 587):
+    raise ValueError("Namecheap Private Email requires port 465 or 587")
+EMAIL_USE_SSL = EMAIL_PORT == 465
+EMAIL_USE_TLS = EMAIL_PORT == 587
 EMAIL_TIMEOUT = 8
 DEFAULT_FROM_EMAIL = f"PLOT Developments <{EMAIL_HOST_USER}>"
