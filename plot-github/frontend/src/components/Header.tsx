@@ -9,6 +9,7 @@ const groups = {
   Services: [
     ["Explore services", "/services"],
     ["Our process", "/process"],
+    ["Hargeisa cost calculator", "/qiyaas"],
     ["Request a cost estimate", "/contact?service=Cost%20estimation%20%2F%20BOQ"]
   ],
   Projects: [
