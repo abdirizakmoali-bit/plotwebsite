@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CookiePreferences } from "./CookiePreferences";
 import styles from "./Footer.module.css";
 
 export function Footer() {
@@ -22,6 +23,7 @@ export function Footer() {
           <Link href="/insights">Insights</Link>
           <Link href="/contact">Contact</Link>
           <Link href="/privacy">Privacy</Link>
+          <CookiePreferences/>
         </nav>
       </div>
     </footer>

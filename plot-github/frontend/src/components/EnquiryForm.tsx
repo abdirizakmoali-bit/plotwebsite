@@ -1,4 +1,5 @@
 "use client";
+import { campaignFields } from "@/lib/campaign";
 import Link from "next/link";
 import { FormEvent, useEffect, useRef, useState } from "react";
 const services = ["Architectural design","Structural engineering","Cost estimation / BOQ","Construction management","Property development","Other / Not sure yet"];
@@ -43,8 +44,7 @@ export function EnquiryForm(){
   }
   setBusy(true);setErrors({});setNotice('');
   const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),15000);
-  let attribution:Record<string,string>={};
-  try{attribution=JSON.parse(sessionStorage.getItem('plot-attribution')||'{}');}catch{/* Storage can be disabled. */}
+  const attribution = campaignFields();
   try{
    const res=await fetch(`${api.replace(/\/$/,'')}/api/enquiries/`,{method:'POST',headers:{'Content-Type':'application/json'},signal:controller.signal,body:JSON.stringify({...data,...attribution,consent,submission_id:token.current})});
    const result=await res.json().catch(()=>({}));

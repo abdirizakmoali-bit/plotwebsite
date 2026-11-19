@@ -23,7 +23,6 @@ export function ConversionTools(){
  const whatsapp=(process.env.NEXT_PUBLIC_WHATSAPP_NUMBER||'').replace(/\D/g,'');
  useEffect(()=>{
   const onScroll=()=>{const total=document.documentElement.scrollHeight-window.innerHeight;setProgress(total>0?window.scrollY/total*100:0);setShow(window.scrollY>500);};onScroll();window.addEventListener('scroll',onScroll,{passive:true});
-  try{if(!sessionStorage.getItem('plot-attribution')){const params=new URLSearchParams(location.search);const saved:Record<string,string>={landing_path:location.pathname.slice(0,200)};for(const key of ['utm_source','utm_medium','utm_campaign'])saved[key]=(params.get(key)||'').slice(0,150);sessionStorage.setItem('plot-attribution',JSON.stringify(saved));}}catch{/* No storage means no attribution, not a broken form. */}
   return()=>window.removeEventListener('scroll',onScroll);
  },[]);
  return <><div className="reading-progress" style={{width:`${progress}%`}} aria-hidden="true"/>{show&&<aside className="conversion-bar" aria-label="Start your project"><span>Your idea deserves a clear plan.</span>{whatsapp.length>=7&&<a className="whatsapp-link" href={`https://wa.me/${whatsapp}?text=${encodeURIComponent('Hello PLOT, I would like to discuss a project.')}`} target="_blank" rel="noopener noreferrer">WhatsApp ↗</a>}<Link className="btn" href="/contact">START YOUR PROJECT →</Link></aside>}</>;
