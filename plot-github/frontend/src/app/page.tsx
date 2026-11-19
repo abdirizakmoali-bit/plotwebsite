@@ -1,5 +1,6 @@
 import { HomeFeature } from "@/components/HomeFeature";
 import Link from "next/link";
+import styles from "./home-download.module.css";
 import { getPosts } from "@/lib/insights";
 
 const features = [
@@ -12,6 +13,17 @@ export default function Home() {
   const stories = getPosts().slice(0, 3);
   return <>
     <HomeFeature/>
+    <section aria-labelledby="download-estimate-title" className="home-land">
+      <div className="shell">
+        <div><h2 id="download-estimate-title" className="feature-heading">Download your home estimate.</h2>
+          <p>Planning a home in Hargeisa? Get a PDF with your build estimate and a diagram of your plot, boundary and landscaping. The illustrated sample guide is available to download straight away.</p>
+        </div>
+        <div className={styles.downloads}>
+          <Link className={styles.primary} href="/qiyaas/#xisaabi">Get my estimate (PDF)</Link>
+          <a className="text-action" href="/downloads/PLOT-Hagaha-Dhulka.pdf" download="PLOT-Hagaha-Dhulka.pdf">Download sample guide (PDF)</a>
+        </div>
+      </div>
+    </section>
     <section className="shell disciplines"><h2>From land to keys.</h2><div className="tiles">{features.map(f => <Link key={f.title} href={f.link}>
       <img src={'/studio/' + f.image + '.webp'} alt={f.alt} loading="lazy"/><h3>{f.title} ↗</h3><p>{f.text}</p></Link>)}</div></section>
     <section className="home-land">

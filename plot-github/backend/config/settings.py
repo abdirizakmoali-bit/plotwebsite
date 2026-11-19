@@ -9,6 +9,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "local-development-only-change-me")
 DEBUG = os.environ.get("DEBUG", "false").lower() == "true"
 ALLOWED_HOSTS = [x.strip() for x in os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",") if x.strip()]
 CORS_ALLOWED_ORIGINS = [x.strip() for x in os.environ.get("CORS_ALLOWED_ORIGINS", "http://localhost:3000").split(",") if x.strip()]
+ESTIMATE_PREVIEW_ORIGIN = os.environ.get("ESTIMATE_PREVIEW_ORIGIN", "").rstrip("/")
 CSRF_TRUSTED_ORIGINS = [x.strip() for x in os.environ.get("CSRF_TRUSTED_ORIGINS", "http://localhost:3000").split(",") if x.strip()]
 INSTALLED_APPS = [
     "django.contrib.admin", "django.contrib.auth", "django.contrib.contenttypes", 

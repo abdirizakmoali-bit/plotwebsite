@@ -1,0 +1,22 @@
+.downloads {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 22px;
+}
+.primary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 12px 20px;
+  background: #233d32;
+  color: white;
+  font-weight: 600;
+  border-radius: 3px;
+}
+.primary:hover, .primary:focus-visible { background: #345842; }
+.downloads a { line-height: 1.5; }
+@media (max-width: 600px) {
+  .downloads { flex-direction: column; align-items: flex-start; }
+  .downloads a { display: inline-flex; align-items: center; min-height: 44px; }
+}
