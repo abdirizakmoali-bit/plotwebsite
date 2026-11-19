@@ -16,7 +16,7 @@ export default function EstimatePage() {
         <h1>Immisa ayuu ku kacayaa dhismaha gurigaaga?</h1>
         <p>Geli cabbirka gurigaaga, dooro heerka dhammaystirka, oo isla markiiba arag qiyaasta kharashka.</p>
       </div>
-      <img src="/home.webp" alt="Naqshad guri ay diyaarisay PLOT" />
+      <img src="/studio/site.webp" alt="Guri laba dabaq ah oo dhismihiisu socdo, hortiisana yaallaan agab dhisme" />
     </header>
     <Calculator />
   </div>;

@@ -41,6 +41,9 @@ body{background:white;color:#20211e;font-family:Inter,Arial,sans-serif}
 #studies .section-intro { margin-bottom: 32px; }
 .home-portfolio { background: #292e29; color: white; }
 .home-portfolio .shell { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 6%; padding-block: clamp(40px,6vw,84px); }
+.home-portfolio figure { margin: 0; }
+.home-portfolio figcaption { margin-top: 8px; font-size: .85rem; line-height: 1.5; color: #d4d9d1; }
+.home-portfolio figcaption a { text-decoration: underline; text-underline-offset: 2px; }
 .home-portfolio img { width:100%; height:auto; display:block; }
 .home-portfolio p { max-width: 42ch; line-height: 1.75; color: #e4e5de; }
 .home-portfolio nav { display:flex; flex-wrap:wrap; gap:8px 18px; }
