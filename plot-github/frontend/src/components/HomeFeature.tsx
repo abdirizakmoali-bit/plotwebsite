@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { ListingSearch } from "./ListingSearch";
 import styles from "./HomeFeature.module.css";
 
 const features = [
@@ -23,6 +24,10 @@ export function HomeFeature() {
         <p className={styles.location}>Hargeisa, Somaliland</p>
         <h1>{feature.title}</h1><p className={styles.description}>{feature.copy}</p>
         <Link className={styles.action} href={feature.href}>{feature.action}<span aria-hidden="true">↗︎</span></Link>
+      </div>
+      <div className={styles.searchArea}>
+        <h2>Find property or land</h2>
+        <ListingSearch />
       </div>
       <div className={styles.choices} role="group" aria-label="Choose your project goal">
         {features.map((item,i) => <button key={item.label} onClick={() => setIndex(i)} type="button" aria-pressed={index === i}>{item.label}</button>)}

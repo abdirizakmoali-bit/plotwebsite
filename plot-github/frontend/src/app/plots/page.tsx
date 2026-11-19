@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { PlotCatalogue, PlotSearchBrief } from "./PlotCatalogue";
+import { SaleListings } from "@/components/SaleListings";
+import { PlotSearchBrief } from "./PlotCatalogue";
 import styles from "./plots.module.css";
 
 export const metadata: Metadata = {
@@ -21,7 +22,7 @@ export default function PlotsPage() {
       <div className={`shell ${styles.layout}`}>
         <section aria-labelledby="listings-title">
           <h2 className={styles.heading} id="listings-title">Available plots</h2>
-          <PlotCatalogue />
+          <SaleListings category="land" landPage />
         </section>
         <aside className={styles.brief} aria-labelledby="search-title">
           <h2 id="search-title" className={styles.heading}>Find me a plot</h2>

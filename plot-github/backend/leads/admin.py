@@ -19,8 +19,8 @@ class EnquiryAdmin(admin.ModelAdmin):
 
 @admin.register(LandPlot)
 class LandPlotAdmin(admin.ModelAdmin):
-    list_display = ('title', 'location', 'area_m2', 'price_usd', 'status')
-    list_filter = ('status',)
+    list_display = ('title', 'kind', 'location', 'area_m2', 'price_usd', 'status')
+    list_filter = ('status', 'kind')
     search_fields = ('title', 'location')
     list_editable = ('status',)
 

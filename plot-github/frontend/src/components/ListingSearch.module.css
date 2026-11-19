@@ -1,0 +1,21 @@
+.search {
+  display: grid; grid-template-columns: minmax(150px, .7fr) minmax(210px, 1.55fr) auto;
+  align-items: stretch; max-width: 840px; padding: 8px; border: 1px solid #d2d7ce;
+  border-radius: 4px; background: #fff; color: #232923; gap: 6px;
+  font-family: Inter, Arial, sans-serif;
+}
+.field { display: grid; gap: 2px; min-width: 0; padding: 3px 12px; }
+.field:first-of-type { border-right: 1px solid #d9ded5; }
+.field span { color: #52614e; font-size: .875rem; }
+.field input,.field select { min-width: 0; width: 100%; border: 0; border-radius: 0; background: #fff; color: #232923; font-size: 1rem; line-height: 1.4; padding: 4px 0; }
+.field select { cursor: pointer; }
+.search button { display: flex; justify-content: center; align-items: center; gap: 12px; border: 0; border-radius: 2px; padding: 12px 23px; min-height: 44px; color: #fff; background: #293a2c; font-size: 1rem; font-weight: 600; }
+.search button:hover { background: #405440; }
+.glass { position: relative; width: 14px; height: 14px; border: 1.75px solid currentColor; border-radius: 100%; }
+.glass::after { content: ""; position: absolute; width: 7px; border-top: 2px solid currentColor; bottom: -3px; right: -5px; transform: rotate(45deg); }
+.search :focus-visible { outline: 2px solid #98792b; outline-offset: 2px; }
+@media (max-width: 640px) {
+  .search { grid-template-columns: minmax(100px, .85fr) minmax(0, 1.4fr); }
+  .field { padding: 4px 6px; }
+  .search button { grid-column: 1 / -1; }
+}
