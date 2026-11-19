@@ -1,42 +1,78 @@
 .hero {
-  position:relative; isolation:isolate; overflow:hidden; background:#323a30; color:#fff;
-  min-height:clamp(620px,91svh,1020px); display:grid;
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  overflow: hidden;
+  min-height: clamp(650px, 91svh, 1020px);
+  background: #323a30;
+  color: #fff;
 }
-.photo { position:absolute; inset:0; z-index:-2; width:100%; height:100%; object-fit:cover; object-position:55% 54%; animation:reveal .4s ease-out; }
-.hero:before { content:""; position:absolute; inset:0; z-index:-1;
-  background:linear-gradient(180deg,rgba(10,15,11,.75),transparent 26%,transparent 64%,rgba(10,15,11,.8)),linear-gradient(90deg,#0c130ee8,#0c130e91 38%,#0c130e12 78%);
-}
-.inner { width:min(100% - clamp(40px,9vw,150px),1540px); margin:0 auto; display:flex; flex-direction:column; justify-content:flex-end; padding-top:120px; }
-.copy { max-width:650px; padding-bottom:clamp(20px,3vh,36px); }
-.location { margin:0 0 14px; text-transform:uppercase; font:500 12px/1.5 Inter,Arial,sans-serif; letter-spacing:.17em; }
-.copy h1 { max-width:12ch; margin:0; font:400 clamp(60px,6.8vw,112px)/.98 Georgia,serif; letter-spacing:-.055em; text-wrap:balance; }
-.description { font:400 clamp(16px,1.25vw,20px)/1.5 Inter,Arial,sans-serif; max-width:43ch; margin:20px 0 25px; }
-.action { display:inline-flex; align-items:center; gap:28px; min-height:46px; padding:10px 20px; background:#fbfaf5; color:#202521; border-radius:2px; }
-.action:hover { background:#eee5cf; }
-.choices { display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(12px,2.5vw,44px); padding-bottom:14px; }
-.choices button { line-height:1.3; text-align:left; background:none; border:0; border-top:1px solid #ffffff82; color:white; min-height:56px; padding:12px 0; position:relative; }
-.choices button[aria-pressed="true"]:before { content:""; position:absolute; top:-2px; left:0; right:0; height:3px; background:#ecd096; }
-.choices button:hover { border-color:white; }
-@keyframes reveal { from { opacity:.78; } to { opacity:1; } }
-@media(max-width:760px) {
-  .hero { min-height:clamp(590px,91svh,850px); }
-  .hero:before { background:linear-gradient(180deg,#0c120eb8,transparent 28%,#0c120ebd 65%,#0c120ef5); }
-  .photo { object-position:55% center; }
-  .copy { max-width:500px; padding-bottom:26px; }
-  .copy h1 { font-size:clamp(48px,11vw,74px); }
-  .description { margin:13px 0 18px; }
-  .choices button { font-size:14px; }
-}
-@media(prefers-reduced-motion:reduce) { .photo { animation:none; } }
 
+.photo { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; }
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, #0b110dbf, transparent 25%, transparent 52%, #0b110df5),
+    linear-gradient(90deg, #0c130eeb, #0c130eab 39%, #0c130e14 80%);
+}
+
+.inner {
+  width: min(100% - clamp(40px, 9vw, 150px), 1540px);
+  min-width: 0;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 120px 0 12px;
+}
+.copy { max-width: 680px; padding-bottom: clamp(20px, 3vh, 36px); }
+.location { margin: 0 0 14px; text-transform: uppercase; font: 500 12px/1.5 Inter, Arial, sans-serif; letter-spacing: .17em; }
+.copy h1 { max-width: 12ch; margin: 0; font: 400 clamp(60px, 6.8vw, 112px)/.98 Georgia, serif; letter-spacing: -.055em; text-wrap: balance; }
+.description { font: 400 clamp(16px, 1.25vw, 20px)/1.5 Inter, Arial, sans-serif; max-width: 43ch; margin: 18px 0 22px; }
+.action { display: inline-flex; align-items: center; gap: 28px; min-height: 46px; padding: 10px 20px; background: #fbfaf5; color: #202521; border-radius: 2px; }
+.action:hover { background: #eee5cf; }
+.action:focus-visible, .choices button:focus-visible, .credit a:focus-visible { outline: 2px solid #f9d99a; outline-offset: 3px; }
 
 .searchArea { margin-bottom: clamp(20px, 3.5vh, 40px); }
 .searchArea h2 { margin: 0 0 12px; font: 400 clamp(1.4rem, 2vw, 2rem)/1.15 Georgia, serif; letter-spacing: -.025em; }
-@media (max-width: 640px) {
-  .inner { padding-top: 98px; }
-  .copy { padding-bottom: 22px; }
-  .searchArea { margin-bottom: 16px; }
+.choices { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)) auto; gap: clamp(10px, 1.8vw, 34px); }
+.choices button {
+  min-height: 48px;
+  padding: 9px 0;
+  border: 0;
+  border-top: 1px solid #ffffff86;
+  background: transparent;
+  color: #fff;
+  font: 500 1rem/1.25 Inter, Arial, sans-serif;
+  text-align: left;
+  cursor: pointer;
 }
-
-.credit { align-self: flex-end; margin: -4px 0 10px; padding: 3px 8px; background: #152019dc; color: #fff; font: 400 .8rem/1.5 Inter, Arial, sans-serif; }
+.choices button:hover { border-color: #fff; }
+.choices button[aria-pressed="true"] { border-color: #ecd096; box-shadow: inset 0 2px #ecd096; color: #ffe3a9; }
+.choices .rotation { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 68px; }
+.pauseIcon { width: 9px; height: 12px; border-inline: 3px solid currentColor; }
+.playIcon { width: 0; height: 0; border-block: 6px solid transparent; border-left: 9px solid currentColor; }
+.credit { align-self: flex-end; margin-top: 4px; color: #fff; font: 400 .75rem/1.5 Inter, Arial, sans-serif; }
 .credit a { text-decoration: underline; text-underline-offset: 2px; }
+
+@media (max-width: 800px) {
+  .choices { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 16px; }
+  .choices button { min-height: 44px; font-size: .9rem; }
+  .choices .rotation { justify-content: flex-start; }
+}
+@media (max-width: 640px) {
+  .hero { min-height: 91svh; }
+  .hero::before {
+    background: linear-gradient(180deg, #0b110dba, transparent 16%, #0c120e55 30%, #0c120ee6 64%, #0c120ef8),
+      linear-gradient(90deg, #0c120e83, transparent 92%);
+  }
+  .inner { padding-top: clamp(150px, 24svh, 225px); }
+  .copy { padding-bottom: 20px; }
+  .copy h1 { font-size: clamp(46px, 11vw, 68px); }
+  .description { margin: 12px 0 16px; }
+  .searchArea { margin-bottom: 16px; }
+  .choices { column-gap: 12px; }
+  .choices button { font-size: .84rem; }
+}
