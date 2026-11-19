@@ -5,19 +5,19 @@ import { parseArea, type Finish, type House } from "./measurements";
 import DownloadEstimate from "./DownloadEstimate";
 import s from "./estimate.module.css";
 
-function Area({ label, value, onChange, optional = false }: {
-  label: string; value: string; onChange: (v: string) => void; optional?: boolean;
+function Area({ label, value, onChange, optional = false, unit = "m²" }: {
+  label: string; value: string; onChange: (v: string) => void; optional?: boolean; unit?: "m" | "m²";
 }) {
   const area = parseArea(value);
   const invalid = value !== "" && (area === null || (!optional && area === 0));
   return <label className={s.area}>
     <span>{label}</span>
     <span className={s.areaBox}>
-      <input inputMode="decimal" type="text" value={value} placeholder={optional ? "0" : "120"}
+      <input inputMode="decimal" type="text" value={value} placeholder={unit === "m" ? "—" : optional ? "0" : "120"}
         required={!optional} aria-invalid={invalid} onChange={event => onChange(event.target.value)} />
-      <span aria-hidden="true">m²</span>
+      <span>{unit}</span>
     </span>
-    {invalid && <small>Geli cabbir sax ah, tusaale ahaan 24.5 m².</small>}
+    {invalid && <small>Geli cabbir sax ah, tusaale ahaan 24.5 {unit}.</small>}
   </label>;
 }
 
@@ -29,9 +29,17 @@ export default function Calculator({children}: {children: ReactNode}) {
   const [upper, setUpper] = useState<string[]>([]);
   const [wall, setWall] = useState("");
   const [landscape, setLandscape] = useState("");
+  const [width, setWidth] = useState("");
+  const [depth, setDepth] = useState("");
+  const [edge, setEdge] = useState("back");
+  const w = parseArea(width), d = parseArea(depth);
+  const hasPlot = Boolean(width.trim() || depth.trim());
+  const dimensionsValid = w !== null && d !== null && w > 0 && d > 0;
+  const exceedsPlot = dimensionsValid && Math.round((parseArea(landscape) ?? 0) * 100) * 100 > Math.round(w * 100) * Math.round(d * 100);
+  const plotValid = !hasPlot || (dimensionsValid && !exceedsPlot);
   const floorInputs = house === "framed" ? [ground, ...upper] : [ground];
   const floorAreas = floorInputs.map(parseArea);
-  const ready = floorAreas.every(area => area !== null && area > 0)
+  const ready = plotValid && floorAreas.every(area => area !== null && area > 0)
     && [wall, landscape].every(value => value.trim() === "" || parseArea(value) !== null);
   const floorTotal = floorAreas.reduce<number>((sum, area) => sum + (area ?? 0), 0);
   const houseName = house === "bungalow" ? "Guri baloog ah" : "Guri shub ah";
@@ -41,6 +49,7 @@ export default function Calculator({children}: {children: ReactNode}) {
     `Hargeysa · ${houseName} · Dhammaystir: ${finishName}`, `Dabaqa hoose: ${ground} m²`,
     ...(house === "framed" ? upper.map((v, i) => `Dabaqa ${i + 1}aad: ${v} m²`) : []),
     `Aagga darbiga dayrka: ${wall || "0"} m² · Daaradda: ${landscape || "0"} m²`,
+    ...(hasPlot && plotValid ? [`Dhulka: ${width} × ${depth} m`] : []),
   ].join("\n");
   const phone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER?.replace(/\D/g, "") || "252638339599";
 
@@ -74,12 +83,24 @@ export default function Calculator({children}: {children: ReactNode}) {
           <button type="button" disabled={upper.length >= 100} className={s.textButton} onClick={() => setUpper(values => [...values, ""])}>+ Ku dar dabaq kale</button>
         </>}
       </fieldset>
+      <fieldset><legend>Qorshaha dhulka <small>(ikhtiyaari)</small></legend>
+        <p>Haddii dhulkaagu leydi yahay, geli ballaca iyo dhererka si PDF-ku u muujiyo xadka dhulkaaga iyo daaradda. Haddii aad bannaanto labadaba, PDF-ku wuxuu ku tusayaa qorshe tusaale ah.</p>
+        <div className={s.pair}>
+          <Area label="Ballaca dhulka" unit="m" value={width} onChange={setWidth} optional />
+          <Area label="Dhererka dhulka" unit="m" value={depth} onChange={setDepth} optional />
+        </div>
+        {hasPlot && !dimensionsValid && <p role="status">Geli ballac iyo dherer labaduba ka weyn eber.</p>}
+      </fieldset>
       <fieldset><legend>Dayrka iyo daaradda</legend>
         <p>Dayrka ka cabbir hal dhinac: dhererka guud ku dhufo joogga darbiga. Haddii aanad ku darin dayr ama habaynta daaradda, bannaanee cabbirkaas.</p>
         <div className={s.pair}>
           <Area label="Darbiga dayrka" value={wall} onChange={setWall} optional />
           <Area label="Habaynta daaradda" value={landscape} onChange={setLandscape} optional />
         </div>
+        {exceedsPlot && <p role="status">Bedka daaraddu kama badnaan karo bedka dhulka.</p>}
+        {hasPlot && (parseArea(landscape) ?? 0) > 0 && <label className={s.edge}>Dhinaca la habaynayo
+          <select value={edge} onChange={e => setEdge(e.target.value)}><option value="back">Dhabarka</option><option value="front">Hore</option><option value="left">Bidix</option><option value="right">Midig</option></select>
+        </label>}
       </fieldset>
     </section>
     <aside className={s.result} aria-label="Natiijada qiyaasta">
@@ -90,12 +111,10 @@ export default function Calculator({children}: {children: ReactNode}) {
           <strong>{floorTotal.toLocaleString("en-US", {maximumFractionDigits: 2})} m²</strong>
           <p>Qiyaasta kharashka iyo faahfaahinta qayb kasta waxaad ka helaysaa PDF-kaaga.</p></> :
           <><p>Geli cabbirka dabaq kasta si aad u codsato qiyaastaada.</p>
-          {!ground && !upper.length && !wall && !landscape && <button type="button" className={s.example} onClick={() => {setHouse("bungalow"); setFinish("standard"); setGround("120"); setWall("100"); setLandscape("50");}}>Tijaabi tusaale guri 120 m² ah</button>}</>}
+          {!ground && !upper.length && !wall && !landscape && <button type="button" className={s.example} onClick={() => {setHouse("bungalow"); setFinish("standard"); setGround("120"); setWall("100"); setLandscape("50"); setWidth("20"); setDepth("30"); setEdge("back");}}>Tijaabi tusaale guri 120 m² ah</button>}</>}
       </div>
-      {ready && <>
-        <DownloadEstimate inputs={{house,finish,ground,upper:house === "framed" ? upper : [],wall,landscape}} />
-        <a className={s.askLink} href={whatsapp} target="_blank" rel="noopener noreferrer">Qiyaastan WhatsApp nagala hadal</a>
-      </>}
+      <DownloadEstimate ready={ready} inputs={{house,finish,ground,upper:house === "framed" ? upper : [],wall,landscape,plot_width:width,plot_depth:depth,landscape_edge:edge}} />
+      {ready && <a className={s.askLink} href={whatsapp} target="_blank" rel="noopener noreferrer">Qiyaastan WhatsApp nagala hadal</a>}
       <p className={s.note}>Qiimaha kama dambaysta ahi wuxuu ku xiran yahay naqshadda, goobta iyo agabka aad doorato.</p>
     </aside>
   </div>

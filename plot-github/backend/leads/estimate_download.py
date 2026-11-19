@@ -8,11 +8,12 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import mm
-from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
+from reportlab.platypus import PageBreak, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 from rest_framework import serializers, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from .plot_guide import EDGES, IllustratedSheet, photo_guide, site_plan
 from .serializers import EnquirySerializer
 
 CENT = Decimal("0.01")
@@ -34,7 +35,15 @@ class EstimateInputs(serializers.Serializer):
     wall = serializers.DecimalField(max_digits=14, decimal_places=2, min_value=0, default=Decimal(0))
     landscape = serializers.DecimalField(max_digits=14, decimal_places=2, min_value=0, default=Decimal(0))
 
+    plot_width = serializers.DecimalField(max_digits=14, decimal_places=2, min_value=CENT, required=False)
+    plot_depth = serializers.DecimalField(max_digits=14, decimal_places=2, min_value=CENT, required=False)
+    landscape_edge = serializers.ChoiceField(choices=list(EDGES), default="back")
+
     def validate(self, data):
+        if ("plot_width" in data) != ("plot_depth" in data):
+            raise serializers.ValidationError("Enter both plot dimensions.")
+        if "plot_width" in data and data["landscape"] > data["plot_width"] * data["plot_depth"]:
+            raise serializers.ValidationError("Landscaping exceeds the plot area.")
         if data["house"] == "bungalow" and data["upper"]:
             raise serializers.ValidationError("Upper floors require a framed house.")
         return data
@@ -53,7 +62,7 @@ def calculate(data):
     return rows, sum(row[2] for row in rows)
 
 
-def make_pdf(name, reference, house, finish, rows, total):
+def make_pdf(name, reference, house, finish, rows, total, data=None):
     stream = BytesIO()
     doc = SimpleDocTemplate(stream, pagesize=A4, leftMargin=20*mm, rightMargin=20*mm,
                             topMargin=23*mm, bottomMargin=22*mm, title="PLOT | Qiyaasta dhismaha")
@@ -81,6 +90,8 @@ def make_pdf(name, reference, house, finish, rows, total):
               Spacer(1, 14), Paragraph("Qiimaha dhismaha waxa ku jira saqafka, albaabbada, daaqadaha, marmarka sagxadda iyo rinjiga.", text),
               Spacer(1, 7), Paragraph("Qiyaastani waa hordhac. Qiimaha kama dambaysta ahi wuxuu ku xiran yahay naqshadda, goobta iyo agabka aad doorato.", text),
               Spacer(1, 10), Paragraph('Su’aal ma qabtaa? <link href="https://wa.me/252638339599" color="#254D40"><u>PLOT kala hadal WhatsApp · +252 63 833 9599</u></link>', text)]
+    parts += [PageBreak(), IllustratedSheet(photo_guide), PageBreak(), IllustratedSheet(site_plan, data)]
+
     def furniture(canvas, document):
         w, h = A4
         canvas.setFillColor(colors.HexColor(green)); canvas.setFont("Helvetica-Bold", 12)
@@ -106,6 +117,9 @@ class DownloadEstimate(APIView):
         finish = "Heer sare" if data["finish"] == "high" else "Caadi"
         brief = f"Estimate PDF | Hargeysa | {house} | {finish} | USD {total:,.2f}\n" + "\n".join(
             f"{label}: {detail} = {usd(amount)}" for label, detail, amount in rows)
+        if "plot_width" in data:
+            description = f"Plot {data['plot_width']} x {data['plot_depth']} m | Landscape edge {data['landscape_edge']}"
+            brief = description + "\n" + brief
         fields = {k:raw[k] for k in ("submission_id","full_name","phone","email","consent","website","utm_source","utm_medium","utm_campaign") if k in raw}
         if not str(fields.get("full_name", "")).strip() or not fields.get("email"):
             raise serializers.ValidationError("Name, phone and email are required.")
@@ -115,7 +129,7 @@ class DownloadEstimate(APIView):
         lead = lead_input.save()
         if any(getattr(lead, k) != lead_input.validated_data[k] for k in ("full_name", "email", "phone", "brief")):
             return Response({"detail":"Submission ID already used."}, status=status.HTTP_409_CONFLICT)
-        pdf = make_pdf(lead.full_name, lead.reference, house, finish, rows, total)
+        pdf = make_pdf(lead.full_name, lead.reference, house, finish, rows, total, data)
         response = HttpResponse(pdf, content_type="application/pdf")
         response["Content-Disposition"] = f'attachment; filename="PLOT-Qiyaas-{lead.reference}.pdf"'
         response["Cache-Control"] = "private, no-store"

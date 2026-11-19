@@ -38,8 +38,8 @@ export default function EstimatePage() {
       <div className={s.intro}>
         <p className={s.eyebrow}>Hargeysa, Somaliland</p>
         <h1>Immisa ayuu ku kacayaa <em>gurigaaga?</em></h1>
-        <p>Geli cabbirrada gurigaaga, dooro heerka dhammaystirka, kadibna soo dejiso PDF kuu gaar ah oo faahfaahinaya kharashka dhismaha.</p>
-        <nav aria-label="Qaybaha qiyaasta"><a href="#xisaabi">Bilow qiyaastaada</a><a href="#habka">Eeg sida loo cabbiro</a></nav>
+        <p>Soo dejiso hagaha sawirrada iyo qorshe dhul oo tusaale ah. Si aad u hesho qiyaasta gurigaaga iyo jaantus kuu gaar ah, geli cabbirrada iyo xogtaada xiriirka.</p>
+        <nav aria-label="Qaybaha qiyaasta"><a href="/downloads/PLOT-Hagaha-Dhulka.pdf" download>Soo dejiso hagaha tusaalaha (PDF)</a><a href="#soo-dejiso">Hel qiyaastayda gaarka ah (PDF)</a></nav>
       </div>
     </header>
     <Calculator><Guide/></Calculator>

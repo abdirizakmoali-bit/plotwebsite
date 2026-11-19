@@ -139,3 +139,15 @@ class EstimateDownloadTests(TestCase):
             opts = {"HTTP_ORIGIN":origin, "HTTP_ACCESS_CONTROL_REQUEST_METHOD":"POST"}
             self.assertEqual(self.client.options(self.url, **opts).get("Access-Control-Allow-Origin"), origin)
             self.assertIsNone(self.client.options(reverse("enquiry-create"), **opts).get("Access-Control-Allow-Origin"))
+
+    def test_plot_diagram_measurements(self):
+        self.data["estimate"]["plot_width"] = "20"
+        self.assertEqual(self.submit().status_code, 400)
+        self.data["estimate"]["plot_depth"] = "30"
+        self.data["estimate"]["landscape"] = "600.01"
+        self.assertEqual(self.submit().status_code, 400)
+        self.assertFalse(Enquiry.objects.exists())
+        self.data["estimate"].update(landscape="120", landscape_edge="left")
+        response = self.submit()
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Landscape edge left", Enquiry.objects.get().brief)
