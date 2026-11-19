@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { buildingRate, dollars, estimate, parseArea, rates, type Finish, type House } from "./pricing";
+import DownloadEstimate from "./DownloadEstimate";
 import s from "./estimate.module.css";
 
 function Area({ label, value, onChange, optional = false }: {
@@ -20,7 +21,8 @@ function Area({ label, value, onChange, optional = false }: {
   </label>;
 }
 
-export default function Calculator() {
+export default function Calculator({children}: {children: ReactNode}) {
+  const [question, setQuestion] = useState("");
   const [house, setHouse] = useState<House>("bungalow");
   const [finish, setFinish] = useState<Finish>("standard");
   const [ground, setGround] = useState("");
@@ -44,7 +46,11 @@ export default function Calculator() {
   ].join("\n") : "";
   const phone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER?.replace(/\D/g, "") || "252638339599";
 
-  return <div className={s.layout}>
+  const questionLead = amount ? message : "Salaan PLOT, waxaan su’aal ka qabaa qiyaasta kharashka dhismaha guri ku yaalla Hargeysa.";
+  const whatsapp = "https://wa.me/" + phone + "?text=" + encodeURIComponent(questionLead + (question.trim() ? "\n\nSu’aashayda: " + question.trim() : ""));
+  return <>
+    <header className={s.sectionIntro} id="xisaabi"><p className={s.kicker}>Xisaabiyaha dhismaha</p><h2>Qorshahaaga geli.</h2><p>Dooro nooca guriga, kadibna geli aagga dabaq kasta. Wadartu way isbeddelaysaa marka aad cabbir ama heer dhammaystir beddesho.</p></header>
+    <div className={s.layout}>
     <section aria-label="Faahfaahinta guriga" className={s.controls}>
       <fieldset><legend>Nooca guriga</legend>
         <div className={s.choices}>
@@ -67,7 +73,7 @@ export default function Calculator() {
               onChange={v => setUpper(values => values.map((old, n) => n === i ? v : old))} />
             <button type="button" className={s.textButton} aria-label={`Ka saar dabaqa ${i + 1}aad`} onClick={() => setUpper(values => values.filter((_, n) => n !== i))}>Ka saar</button>
           </div>)}
-          <button type="button" className={s.textButton} onClick={() => setUpper(values => [...values, ""])}>+ Ku dar dabaq kale</button>
+          <button type="button" disabled={upper.length >= 100} className={s.textButton} onClick={() => setUpper(values => [...values, ""])}>+ Ku dar dabaq kale</button>
         </>}
       </fieldset>
       <fieldset><legend>Dayrka iyo daaradda</legend>
@@ -84,13 +90,25 @@ export default function Calculator() {
       <div aria-live="polite" aria-atomic="true" className={s.live}>
         {amount ? <><span>Wadarta qiyaasta</span><strong>{dollars(amount.total)}</strong>
           {standard && <small>Dhammaystirka heerka sare wuxuu wadarta ku kordhiyey {dollars(amount.total - standard.total)}.</small>}</> :
-          <p>Geli cabbir sax ah dabaq kasta si aad u aragto wadarta.</p>}
+          <><p>Geli cabbir sax ah dabaq kasta si aad u aragto wadarta.</p>
+          {!ground && !upper.length && !wall && !landscape && <button type="button" className={s.example} onClick={() => {setHouse("bungalow"); setFinish("standard"); setGround("120"); setWall("100"); setLandscape("50");}}>Tijaabi tusaale guri 120 m² ah</button>}</>}
       </div>
       {amount && <>
-        <dl>{lines.map(([label, price]) => <div key={label}><dt>{label}</dt><dd>{dollars(price)}</dd></div>)}</dl>
-        <a className={s.cta} href={`https://wa.me/${phone}?text=${encodeURIComponent(message)}`}>Injineerka PLOT kala hadal WhatsApp</a>
+        <div className={s.composition} aria-hidden="true">{lines.map(([label, value],i) => <span key={label} className={s["shade"+i]} style={{width:(value / amount.total * 100) + "%"}}/>)}</div>
+        <dl>{lines.map(([label, price],i) => <div key={label}><dt><i className={s["shade"+i]} aria-hidden="true"/>{label}</dt><dd>{dollars(price)}</dd></div>)}</dl>
+        <DownloadEstimate inputs={{house,finish,ground,upper:house === "framed" ? upper : [],wall,landscape}} />
+        <a className={s.askLink} href={whatsapp} target="_blank" rel="noopener noreferrer">Qiyaastan WhatsApp nagala hadal</a>
       </>}
       <p className={s.note}>Qiimaha kama dambaysta ahi wuxuu ku xiran yahay naqshadda, goobta iyo agabka aad doorato.</p>
     </aside>
-  </div>;
+  </div>
+  {children}
+  <section className={s.question} aria-labelledby="question-title">
+    <div><p className={s.eyebrow}>La hadal injineerka PLOT</p><h2 id="question-title">Faahfaahin ma u baahan tahay?</h2>
+      <p>Haddii aad rabto sharaxaad ku saabsan qiyaasta ama aad qabto su’aal kale, si toos ah WhatsApp noogala hadal. Haddii aad qiyaas samaysay, faahfaahinteedu waxay la soconaysaa farriintaada.</p></div>
+    <div><label htmlFor="qiyaas-question">Maxaad jeclaan lahayd inaad ogaato? <small>(Ikhtiyaari)</small></label>
+      <textarea id="qiyaas-question" rows={3} maxLength={600} value={question} onChange={e=>setQuestion(e.target.value)} placeholder="Tusaale ahaan, maxaa ku jira kharashka dhammaystirka?"/>
+      <a className={s.wa} href={whatsapp} target="_blank" rel="noopener noreferrer">WhatsApp noogu soo qor</a></div>
+  </section>
+  </>;
 }

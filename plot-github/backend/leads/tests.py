@@ -90,3 +90,52 @@ class PlotCatalogueTests(TestCase):
         self.assertEqual(ids(q='no match here'), set())
         old_catalogue = self.client.get(reverse('available-plots')).json()['plots']
         self.assertEqual([row['id'] for row in old_catalogue], [land.id])
+
+
+class EstimateDownloadTests(TestCase):
+    def setUp(self):
+        cache.clear()
+        self.url = reverse("estimate-download")
+        self.data = {"submission_id":str(uuid.uuid4()), "full_name":"Tijaabo Test",
+                     "phone":"+252630000000", "email":"test@example.com", "consent":True,
+                     "estimate":{"house":"bungalow","finish":"high","ground":"120","wall":"100","landscape":"50"}}
+
+    def submit(self):
+        return self.client.post(self.url, self.data, content_type="application/json")
+
+    def test_download_and_retry_share_one_lead_and_reference(self):
+        result = self.submit()
+        self.assertEqual(result.status_code, 200)
+        self.assertTrue(result.content.startswith(b"%PDF"))
+        self.assertIn("attachment;", result["Content-Disposition"])
+        lead = Enquiry.objects.get()
+        self.assertEqual(lead.email, self.data["email"])
+        self.assertEqual(lead.phone, self.data["phone"])
+        self.assertIn("51,460.00", lead.brief)
+        self.assertIn(str(lead.reference), result["Content-Disposition"])
+        self.assertEqual(self.submit().status_code, 200)
+        self.assertEqual(Enquiry.objects.count(), 1)
+
+    def test_missing_contacts_consent_or_areas_never_release_pdf(self):
+        for field, bad in [("phone","123"),("email","bad"),("full_name"," "),("consent",False),("estimate",{})]:
+            previous = self.data[field]; self.data[field] = bad
+            response = self.submit()
+            self.assertEqual(response.status_code, 400)
+            self.assertNotEqual(response["Content-Type"], "application/pdf")
+            self.data[field] = previous
+        self.assertFalse(Enquiry.objects.exists())
+
+    def test_standard_and_framed_rates(self):
+        from .estimate_download import EstimateInputs, calculate
+        cases = [("bungalow","standard",[],"47500.00"), ("framed","high",["100","40"],"143805.00")]
+        for house, finish, floors, expected in cases:
+            serializer = EstimateInputs(data={**self.data["estimate"],"house":house,"finish":finish,"upper":floors})
+            serializer.is_valid(raise_exception=True)
+            self.assertEqual(str(calculate(serializer.validated_data)[1]), expected)
+
+    def test_preview_origin_only_applies_to_download(self):
+        origin = "https://preview.example.com"
+        with self.settings(ESTIMATE_PREVIEW_ORIGIN=origin):
+            opts = {"HTTP_ORIGIN":origin, "HTTP_ACCESS_CONTROL_REQUEST_METHOD":"POST"}
+            self.assertEqual(self.client.options(self.url, **opts).get("Access-Control-Allow-Origin"), origin)
+            self.assertIsNone(self.client.options(reverse("enquiry-create"), **opts).get("Access-Control-Allow-Origin"))
